@@ -793,6 +793,10 @@ def render_html_content(
             .standalone-section {
                 border-top: 2px solid var(--line);
             }
+            /* 当 section-divider 叠加时，不重复渲染 border-top */
+            .section-divider.standalone-section {
+                border-top: none;
+            }
 
             .standalone-section-header {
                 display: flex;
@@ -1034,9 +1038,9 @@ def render_html_content(
 
             /* 折叠/展开 */
             .collapse-icon { display: none; margin-right: 6px; font-size: 11px; color: var(--faint); transition: transform 0.2s; user-select: none; }
-            .word-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible, .ai-section-header.collapsible, .standalone-section-header.collapsible { cursor: pointer; }
-            .word-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon, .ai-section-header.collapsible .collapse-icon, .standalone-section-header.collapsible .collapse-icon { display: inline; }
-            .word-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover, .ai-section-header.collapsible:hover, .standalone-section-header.collapsible:hover { background: #ebe8e0; }
+            .word-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible, .ai-section-header.collapsible, .standalone-section-header.collapsible, .standalone-header.collapsible { cursor: pointer; }
+            .word-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon, .ai-section-header.collapsible .collapse-icon, .standalone-section-header.collapsible .collapse-icon, .standalone-header.collapsible .collapse-icon { display: inline; }
+            .word-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover, .ai-section-header.collapsible:hover, .standalone-section-header.collapsible:hover, .standalone-header.collapsible:hover { background: #ebe8e0; }
             .word-group.collapsed .news-item { display: none; }
             .word-group.collapsed .collapse-icon { transform: rotate(-90deg); }
             .feed-group.collapsed .rss-item { display: none; }
@@ -1047,6 +1051,8 @@ def render_html_content(
             .ai-section.collapsed .collapse-icon { transform: rotate(-90deg); }
             .standalone-section.collapsed .standalone-groups-grid { display: none; }
             .standalone-section.collapsed .collapse-icon { transform: rotate(-90deg); }
+            .standalone-group.collapsed .news-item, .standalone-group.collapsed .rss-item { display: none; }
+            .standalone-group.collapsed .collapse-icon { transform: rotate(-90deg); }
 
             /* Tab 切换动画 */
             body.wide-mode .word-group[data-tab-index] { animation: tabFadeIn 0.2s ease; }
@@ -1082,7 +1088,7 @@ def render_html_content(
             body.dark-mode .section-divider { border-top-color: #2e2a26; }
             body.dark-mode .feed-header { border-bottom-color: #2e2a26; border-left-color: #4a6b48; background: #1e2218; }
             body.dark-mode .news-number, body.dark-mode .new-item-number { background: #2e2a26; color: #6b6760; }
-            body.dark-mode .word-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover, body.dark-mode .ai-section-header.collapsible:hover, body.dark-mode .standalone-section-header.collapsible:hover { background: #28241f; }
+            body.dark-mode .word-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover, body.dark-mode .ai-section-header.collapsible:hover, body.dark-mode .standalone-section-header.collapsible:hover, body.dark-mode .standalone-header.collapsible:hover { background: #28241f; }
             body.dark-mode .tab-bar-wrapper { background: #221e1a; border-bottom-color: #2e2a26; }
             body.dark-mode .tab-arrow { color: #6b6760; }
             body.dark-mode .tab-arrow:hover { color: #e0a060; }
@@ -1741,8 +1747,9 @@ def render_html_content(
                 continue
 
             standalone_html += f"""
-                    <div class="standalone-group" data-standalone-tab="{group_idx}">
+                    <div class="standalone-group collapsed" data-standalone-tab="{group_idx}">
                         <div class="standalone-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="standalone-name">{html_escape(platform_name)}</div>
                             <div class="standalone-count">{len(items)} 条</div>
                         </div>"""
@@ -1833,8 +1840,9 @@ def render_html_content(
                 continue
 
             standalone_html += f"""
-                    <div class="standalone-group" data-standalone-tab="{group_idx}">
+                    <div class="standalone-group collapsed" data-standalone-tab="{group_idx}">
                         <div class="standalone-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="standalone-name">{html_escape(feed_name)}</div>
                             <div class="standalone-count">{len(items)} 条</div>
                         </div>"""
@@ -2203,11 +2211,17 @@ def render_html_content(
                         if (section) section.classList.toggle('collapsed');
                     });
                 });
+                document.querySelectorAll('.standalone-header').forEach(function(header) {
+                    header.addEventListener('click', function() {
+                        var group = header.closest('.standalone-group');
+                        if (group) group.classList.toggle('collapsed');
+                    });
+                });
                 initCollapseVisibility();
             }
 
             function initCollapseVisibility() {
-                var headers = document.querySelectorAll('.word-header, .feed-header, .ai-block-header, .ai-section-header, .standalone-section-header');
+                var headers = document.querySelectorAll('.word-header, .feed-header, .ai-block-header, .ai-section-header, .standalone-section-header, .standalone-header');
                 headers.forEach(function(h) {
                     h.classList.add('collapsible');
                 });
