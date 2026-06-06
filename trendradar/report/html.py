@@ -1723,17 +1723,6 @@ def render_html_content(
                         <div class="standalone-section-count">{total_count} 条</div>
                     </div>"""
 
-        # 生成 tab 栏（2+ 分组时）
-        if len(all_groups) >= 2:
-            standalone_html += """
-                    <div class="tab-bar standalone-tab-bar">"""
-            for idx, g in enumerate(all_groups):
-                active = ' active' if idx == 0 else ''
-                standalone_html += f"""
-                        <button class="tab-btn{active}" data-standalone-tab="{idx}">{html_escape(g["name"])}<span class="tab-count">{g["count"]}</span></button>"""
-            standalone_html += f"""
-                        <button class="tab-btn" data-standalone-tab="all">全部<span class="tab-count">{total_count}</span></button>
-                    </div>"""
 
         standalone_html += """
                     <div class="standalone-groups-grid">"""
@@ -2003,7 +1992,6 @@ def render_html_content(
                 if (btn) btn.textContent = isWide ? '⊡' : '⛶';
                 initTabVisibility();
                 initCollapseVisibility();
-                initStandaloneTabVisibility();
             }
 
             function toggleDarkMode() {
@@ -2227,51 +2215,6 @@ def render_html_content(
                 });
             }
 
-            // 独立展示区 Tab 切换
-            function initStandaloneTabs() {
-                var tabBar = document.querySelector('.standalone-tab-bar');
-                if (!tabBar) return;
-                var groups = document.querySelectorAll('.standalone-group[data-standalone-tab]');
-                var btns = tabBar.querySelectorAll('.tab-btn[data-standalone-tab]');
-                initTabScroll(tabBar);
-
-                function activateStandaloneTab(val) {
-                    btns.forEach(function(b) {
-                        var bVal = b.getAttribute('data-standalone-tab');
-                        b.classList.toggle('active', bVal === String(val));
-                    });
-                    groups.forEach(function(g) {
-                        var gVal = g.getAttribute('data-standalone-tab');
-                        g.style.display = (val === 'all' || gVal === String(val)) ? '' : 'none';
-                    });
-                }
-
-                btns.forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        activateStandaloneTab(btn.getAttribute('data-standalone-tab'));
-                    });
-                });
-
-                // 初始状态
-                initStandaloneTabVisibility();
-            }
-
-            function initStandaloneTabVisibility() {
-                var tabBar = document.querySelector('.standalone-tab-bar');
-                if (!tabBar) return;
-                var groups = document.querySelectorAll('.standalone-group[data-standalone-tab]');
-                var isWide = document.body.classList.contains('wide-mode');
-                if (!isWide || groups.length <= 1) {
-                    tabBar.classList.add('tab-hidden');
-                    groups.forEach(function(g) { g.style.display = ''; });
-                } else {
-                    tabBar.classList.remove('tab-hidden');
-                    var activeBtn = tabBar.querySelector('.tab-btn.active');
-                    if (activeBtn) activeBtn.click();
-                    else { var first = tabBar.querySelector('.tab-btn'); if (first) first.click(); }
-                }
-            }
-
             function prepareForScreenshot() {
                 var state = {
                     wasWide: document.body.classList.contains('wide-mode'),
@@ -2286,14 +2229,7 @@ def render_html_content(
                         g.style.display = '';
                     }
                 });
-                state.hiddenStandaloneGroups = [];
-                document.querySelectorAll('.standalone-group[data-standalone-tab]').forEach(function(g, i) {
-                    if (g.style.display === 'none') {
-                        state.hiddenStandaloneGroups.push(i);
-                        g.style.display = '';
-                    }
-                });
-                document.querySelectorAll('.tab-bar-wrapper, .standalone-tab-bar, .search-bar, .fab-bar, .toggle-wide-btn').forEach(function(el) {
+                document.querySelectorAll('.tab-bar-wrapper, .search-bar, .fab-bar, .toggle-wide-btn').forEach(function(el) {
                     el.dataset.prevDisplay = el.style.display || '';
                     el.style.display = 'none';
                 });
@@ -2312,13 +2248,7 @@ def render_html_content(
                 state.hiddenGroups.forEach(function(i) {
                     if (groups[i]) groups[i].style.display = 'none';
                 });
-                var standaloneGroups = document.querySelectorAll('.standalone-group[data-standalone-tab]');
-                if (state.hiddenStandaloneGroups) {
-                    state.hiddenStandaloneGroups.forEach(function(i) {
-                        if (standaloneGroups[i]) standaloneGroups[i].style.display = 'none';
-                    });
-                }
-                document.querySelectorAll('.tab-bar-wrapper, .standalone-tab-bar, .search-bar, .fab-bar, .toggle-wide-btn').forEach(function(el) {
+                document.querySelectorAll('.tab-bar-wrapper, .search-bar, .fab-bar, .toggle-wide-btn').forEach(function(el) {
                     el.style.display = el.dataset.prevDisplay || '';
                     delete el.dataset.prevDisplay;
                 });
@@ -2329,7 +2259,6 @@ def render_html_content(
                 document.querySelectorAll('.header-watermark').forEach(function(el) { el.style.display = ''; });
                 initTabVisibility();
                 initCollapseVisibility();
-                initStandaloneTabVisibility();
                 var fabBar = document.querySelector('.fab-bar');
                 if (fabBar && window.scrollY > 300) fabBar.classList.add('visible');
             }
@@ -2901,7 +2830,6 @@ def render_html_content(
                 initTabs();
                 initBackToTop();
                 initCollapse();
-                initStandaloneTabs();
 
                 // 键盘快捷键
                 document.addEventListener('keydown', function(e) {
