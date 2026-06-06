@@ -244,6 +244,16 @@ rss:
       url: "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml"
       max_age_days: 2
 
+    - id: "bbc-london"
+      name: "BBC London News"
+      url: "http://feeds.bbci.co.uk/news/england/london/rss.xml"
+      max_age_days: 1
+
+    - id: "bbc-cambridgeshire"
+      name: "BBC Cambridgeshire News"
+      url: "http://feeds.bbci.co.uk/news/england/cambridgeshire/rss.xml"
+      max_age_days: 1
+
     # 金融市场 / 交易相关
     - id: "tradingview-top-stories-en"
       name: "TradingView Top Stories (EN)"
@@ -360,7 +370,7 @@ display:
   # 推送展示由 regions.standalone 控制，AI 分析由 ai_analysis.include_standalone 控制
   standalone:
     platforms: ["zhihu", "wallstreetcn-hot"]     # 热榜平台 ID 列表（如 ["zhihu", "weibo"]）
-    rss_feeds: ["tradingview-top-stories-en", "tradingview-top-stories-cn"]                                # RSS 源 ID 列表（如 ["hacker-news"]）
+    rss_feeds: ["tradingview-top-stories-en", "tradingview-top-stories-cn", "bbc-news", "bbc-london", "bbc-cambridgeshire"]                                # RSS 源 ID 列表（如 ["hacker-news"]）
     max_items: 20                                # 每个源最多展示条数（0=不限制）
 
 
