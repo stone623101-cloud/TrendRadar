@@ -1034,15 +1034,17 @@ def render_html_content(
 
             /* 折叠/展开 */
             .collapse-icon { display: none; margin-right: 6px; font-size: 11px; color: var(--faint); transition: transform 0.2s; user-select: none; }
-            .word-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible { cursor: pointer; }
-            .word-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon { display: inline; }
-            .word-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover { background: #ebe8e0; }
+            .word-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible, .ai-section-header.collapsible { cursor: pointer; }
+            .word-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon, .ai-section-header.collapsible .collapse-icon { display: inline; }
+            .word-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover, .ai-section-header.collapsible:hover { background: #ebe8e0; }
             .word-group.collapsed .news-item { display: none; }
             .word-group.collapsed .collapse-icon { transform: rotate(-90deg); }
             .feed-group.collapsed .rss-item { display: none; }
             .feed-group.collapsed .collapse-icon { transform: rotate(-90deg); }
             .ai-block.collapsed .ai-block-content { display: none; }
             .ai-block.collapsed .collapse-icon { transform: rotate(-90deg); }
+            .ai-section.collapsed .ai-blocks-grid { display: none; }
+            .ai-section.collapsed .collapse-icon { transform: rotate(-90deg); }
 
             /* Tab 切换动画 */
             body.wide-mode .word-group[data-tab-index] { animation: tabFadeIn 0.2s ease; }
@@ -1078,7 +1080,7 @@ def render_html_content(
             body.dark-mode .section-divider { border-top-color: #2e2a26; }
             body.dark-mode .feed-header { border-bottom-color: #2e2a26; border-left-color: #4a6b48; background: #1e2218; }
             body.dark-mode .news-number, body.dark-mode .new-item-number { background: #2e2a26; color: #6b6760; }
-            body.dark-mode .word-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover { background: #28241f; }
+            body.dark-mode .word-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover, body.dark-mode .ai-section-header.collapsible:hover { background: #28241f; }
             body.dark-mode .tab-bar-wrapper { background: #221e1a; border-bottom-color: #2e2a26; }
             body.dark-mode .tab-arrow { color: #6b6760; }
             body.dark-mode .tab-arrow:hover { color: #e0a060; }
@@ -2170,44 +2172,36 @@ def render_html_content(
             function initCollapse() {
                 document.querySelectorAll('.word-header').forEach(function(header) {
                     header.addEventListener('click', function() {
-                        var wrapper = document.querySelector('.tab-bar-wrapper');
-                        if (document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden')) return;
                         var group = header.closest('.word-group');
                         if (group) group.classList.toggle('collapsed');
                     });
                 });
                 document.querySelectorAll('.feed-header').forEach(function(header) {
                     header.addEventListener('click', function() {
-                        var wrapper = document.querySelector('.tab-bar-wrapper');
-                        if (document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden')) return;
                         var group = header.closest('.feed-group');
                         if (group) group.classList.toggle('collapsed');
                     });
                 });
                 document.querySelectorAll('.ai-block-header').forEach(function(header) {
                     header.addEventListener('click', function() {
-                        var wrapper = document.querySelector('.tab-bar-wrapper');
-                        if (document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden')) return;
                         var block = header.closest('.ai-block');
                         if (block) block.classList.toggle('collapsed');
+                    });
+                });
+                document.querySelectorAll('.ai-section-header').forEach(function(header) {
+                    header.addEventListener('click', function() {
+                        var section = header.closest('.ai-section');
+                        if (section) section.classList.toggle('collapsed');
                     });
                 });
                 initCollapseVisibility();
             }
 
             function initCollapseVisibility() {
-                var headers = document.querySelectorAll('.word-header, .feed-header, .ai-block-header');
-                var wrapper = document.querySelector('.tab-bar-wrapper');
-                var isTabMode = document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden');
+                var headers = document.querySelectorAll('.word-header, .feed-header, .ai-block-header, .ai-section-header');
                 headers.forEach(function(h) {
-                    if (isTabMode) { h.classList.remove('collapsible'); }
-                    else { h.classList.add('collapsible'); }
+                    h.classList.add('collapsible');
                 });
-                if (isTabMode) {
-                    document.querySelectorAll('.word-group.collapsed, .feed-group.collapsed, .ai-block.collapsed').forEach(function(g) {
-                        g.classList.remove('collapsed');
-                    });
-                }
             }
 
             // 独立展示区 Tab 切换
@@ -2994,7 +2988,7 @@ def render_html_content(
         <div class="bm-toast" id="bm-toast"></div>
         <script type="module">
             import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-            import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+            import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
             const app = initializeApp({
                 apiKey: "AIzaSyDDHpJD68ZMsheIK9SzNhIB7CAJk8_F6IU",
@@ -3016,24 +3010,88 @@ def render_html_content(
             window.saveBookmark = async function(e, btn) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (btn.classList.contains('saved')) return;
+
                 var title = btn.dataset.title;
                 var url   = btn.dataset.url;
                 var src   = btn.dataset.source || '';
+
+                if (btn.classList.contains('saved')) {
+                    // 取消收藏
+                    var docId = btn.dataset.docId;
+                    if (!docId) {
+                        try {
+                            const querySnapshot = await getDocs(collection(db, 'bookmarks'));
+                            querySnapshot.forEach((doc) => {
+                                if (doc.data().url === url) {
+                                    docId = doc.id;
+                                }
+                            });
+                        } catch (err) {
+                            showToast('获取书签失败：' + err.message);
+                            return;
+                        }
+                    }
+                    if (docId) {
+                        try {
+                            await deleteDoc(doc(db, 'bookmarks', docId));
+                            btn.classList.remove('saved');
+                            delete btn.dataset.docId;
+                            btn.title = '保存书签';
+                            showToast('已取消收藏');
+                        } catch (err) {
+                            showToast('取消收藏失败：' + err.message);
+                        }
+                    } else {
+                        showToast('未找到该收藏记录');
+                    }
+                    return;
+                }
+
+                // 保存书签
                 try {
-                    await addDoc(collection(db, 'bookmarks'), {
+                    const docRef = await addDoc(collection(db, 'bookmarks'), {
                         title: title,
                         url: url,
                         source: src,
                         savedAt: serverTimestamp()
                     });
                     btn.classList.add('saved');
+                    btn.dataset.docId = docRef.id;
                     btn.title = '已保存';
                     showToast('已保存到书签 ·  sparkstudio.info/bookmarks');
                 } catch(err) {
                     showToast('保存失败：' + err.message);
                 }
             };
+
+            async function syncSavedBookmarks() {
+                try {
+                    const querySnapshot = await getDocs(collection(db, 'bookmarks'));
+                    const savedUrls = {};
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (data && data.url) {
+                            savedUrls[data.url] = doc.id;
+                        }
+                    });
+                    document.querySelectorAll('.bm-btn').forEach(btn => {
+                        const url = btn.dataset.url;
+                        if (url && savedUrls[url]) {
+                            btn.classList.add('saved');
+                            btn.dataset.docId = savedUrls[url];
+                            btn.title = '已保存';
+                        }
+                    });
+                } catch (err) {
+                    console.error('同步书签状态失败:', err);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', syncSavedBookmarks);
+            } else {
+                syncSavedBookmarks();
+            }
         </script>
     </body>
     </html>
