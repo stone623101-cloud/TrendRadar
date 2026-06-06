@@ -8,6 +8,9 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
 
+# Ensure local bin is in PATH
+export PATH="$HOME/.local/bin:$PATH"
+
 echo -e "${BOLD}╔════════════════════════════════════════╗${NC}"
 echo -e "${BOLD}║  TrendRadar MCP 一键部署 (Mac)        ║${NC}"
 echo -e "${BOLD}╚════════════════════════════════════════╝${NC}"

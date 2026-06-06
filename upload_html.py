@@ -118,5 +118,28 @@ def upload():
         sys.exit(1)
 
 
+def upload_to_gcs():
+    html_path = "/app/output/index.html"
+    bucket_name = os.environ.get("GCS_BUCKET", "news.sparkstudio.info")
+
+    if not os.path.exists(html_path):
+        print(f"[gcs] {html_path} not found, skipping")
+        return
+
+    try:
+        from google.cloud import storage as gcs_storage
+        client = gcs_storage.Client()
+        blob = client.bucket(bucket_name).blob("index.html")
+        blob.upload_from_filename(html_path, content_type="text/html; charset=utf-8")
+        blob.cache_control = "max-age=1800, public"
+        blob.patch()
+        print(f"[gcs] uploaded → gs://{bucket_name}/index.html")
+    except Exception as e:
+        print(f"[gcs] upload failed: {e}")
+        import traceback; traceback.print_exc()
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     upload()
+    upload_to_gcs()

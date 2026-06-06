@@ -46,6 +46,8 @@ concurrency:
 permissions:
   contents: read
   actions: write
+  pages: write
+  id-token: write
 
 jobs:
   crawl:
@@ -168,3 +170,31 @@ jobs:
           S3_REGION: ${{ secrets.S3_REGION }}
           GITHUB_ACTIONS: true
         run: uv run python -m trendradar
+
+      - name: Build Web Artifacts
+        if: success()
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          if [ -d _image ]; then cp -r _image dist/; fi
+
+      - name: Upload Pages artifact
+        if: success()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: crawl
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+    permissions:
+      pages: write
+      id-token: write
+
