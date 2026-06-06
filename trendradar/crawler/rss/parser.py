@@ -58,6 +58,10 @@ class RSSParser:
         Returns:
             解析后的条目列表
         """
+        # 拦截并解析 TradingView 新闻页面
+        if feed_url and "tradingview.com/news" in feed_url:
+            return self._parse_tradingview(content, feed_url)
+
         # 先尝试检测 JSON Feed
         if self._is_json_feed(content):
             return self._parse_json_feed(content, feed_url)
@@ -343,3 +347,128 @@ class RSSParser:
                 return ", ".join(names)
 
         return None
+
+    def _parse_tradingview(self, content: str, feed_url: str) -> List[ParsedRSSItem]:
+        """解析 TradingView HTML 页面中的嵌入 JSON 新闻数据"""
+        import json
+        import re
+        from urllib.parse import urlparse
+        from datetime import datetime
+        import pytz
+
+        # 匹配包含 widgets 的 script 标签
+        scripts = re.findall(r'<script[^>]*>(.*?)</script>', content, re.DOTALL)
+        
+        target_script = None
+        for script in scripts:
+            if '"widgets"' in script and '"news"' in script:
+                target_script = script
+                break
+
+        if not target_script:
+            # 回退方案：寻找看起来像完整 JSON 且包含 widgets 的脚本标签
+            for script in scripts:
+                script_trimmed = script.strip()
+                if script_trimmed.startswith('{') and script_trimmed.endswith('}'):
+                    try:
+                        data = json.loads(script_trimmed)
+                        for k, v in data.items():
+                            if isinstance(v, dict) and 'widgets' in v:
+                                target_script = script_trimmed
+                                break
+                    except Exception:
+                        continue
+                if target_script:
+                    break
+
+        if not target_script:
+            raise ValueError(f"Could not find TradingView news data script in HTML for {feed_url}")
+
+        # 解析 JSON 数据
+        try:
+            data = json.loads(target_script.strip())
+        except Exception as e:
+            # 尝试提取大括号界限
+            start_idx = target_script.find('{')
+            end_idx = target_script.rfind('}')
+            if start_idx != -1 and end_idx != -1:
+                try:
+                    data = json.loads(target_script[start_idx:end_idx+1])
+                except Exception as e2:
+                    raise ValueError(f"Failed to parse extracted JSON from TradingView script: {e2}")
+            else:
+                raise ValueError(f"Failed to parse TradingView script JSON: {e}")
+
+        # 查找包含 widgets 的根字典
+        widgets = None
+        for k, v in data.items():
+            if isinstance(v, dict) and 'widgets' in v:
+                widgets = v['widgets']
+                break
+
+        if not widgets:
+            raise ValueError("No widgets dictionary found in parsed TradingView JSON")
+
+        stories = []
+        seen_ids = set()
+        
+        # 排序策略：优先合并以下常用 widget 里的文章
+        widget_keys = list(widgets.keys())
+        prioritized = ['news_top_stories', 'news_markets', 'news_corp_activity']
+        for pk in reversed(prioritized):
+            if pk in widget_keys:
+                widget_keys.remove(pk)
+                widget_keys.insert(0, pk)
+
+        for w_key in widget_keys:
+            widget_data = widgets[w_key]
+            try:
+                items = widget_data['data']['news']['data']['items']
+                for item in items:
+                    item_id = item.get('id')
+                    if item_id and item_id not in seen_ids:
+                        seen_ids.add(item_id)
+                        stories.append(item)
+            except (KeyError, TypeError):
+                continue
+
+        parsed_items = []
+        parsed_url = urlparse(feed_url)
+        origin = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+        for item in stories:
+            title = self._clean_text(item.get('title', ''))
+            story_path = item.get('storyPath', '')
+            url = origin + story_path if story_path else item.get('link', '')
+
+            published_at = None
+            pub_timestamp = item.get('published')
+            if pub_timestamp:
+                try:
+                    dt = datetime.fromtimestamp(pub_timestamp, tz=pytz.UTC)
+                    published_at = dt.isoformat()
+                except Exception:
+                    pass
+
+            provider = item.get('provider', {})
+            author = provider.get('name') if isinstance(provider, dict) else None
+
+            related = item.get('relatedSymbols', [])
+            summary = ""
+            if related and isinstance(related, list):
+                symbols = [s.get('symbol') for s in related if isinstance(s, dict) and s.get('symbol')]
+                if symbols:
+                    summary = f"Related symbols: {', '.join(symbols)}"
+
+            parsed_items.append(
+                ParsedRSSItem(
+                    title=title,
+                    url=url,
+                    published_at=published_at,
+                    summary=summary or None,
+                    author=author,
+                    guid=item.get('id', url)
+                )
+            )
+
+        return parsed_items
