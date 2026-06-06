@@ -476,6 +476,10 @@ def render_html_content(
                 line-height: 1.4;
                 color: var(--ink);
                 margin: 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 8px;
             }
 
             .news-link {
@@ -759,6 +763,10 @@ def render_html_content(
                 font-family: var(--font-title);
                 font-size: 14px;
                 line-height: 1.45;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 8px;
             }
 
             .rss-link {
@@ -1026,11 +1034,15 @@ def render_html_content(
 
             /* 折叠/展开 */
             .collapse-icon { display: none; margin-right: 6px; font-size: 11px; color: var(--faint); transition: transform 0.2s; user-select: none; }
-            .word-header.collapsible { cursor: pointer; }
-            .word-header.collapsible .collapse-icon { display: inline; }
-            .word-header.collapsible:hover { background: #ebe8e0; }
+            .word-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible { cursor: pointer; }
+            .word-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon { display: inline; }
+            .word-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover { background: #ebe8e0; }
             .word-group.collapsed .news-item { display: none; }
             .word-group.collapsed .collapse-icon { transform: rotate(-90deg); }
+            .feed-group.collapsed .rss-item { display: none; }
+            .feed-group.collapsed .collapse-icon { transform: rotate(-90deg); }
+            .ai-block.collapsed .ai-block-content { display: none; }
+            .ai-block.collapsed .collapse-icon { transform: rotate(-90deg); }
 
             /* Tab 切换动画 */
             body.wide-mode .word-group[data-tab-index] { animation: tabFadeIn 0.2s ease; }
@@ -1066,7 +1078,7 @@ def render_html_content(
             body.dark-mode .section-divider { border-top-color: #2e2a26; }
             body.dark-mode .feed-header { border-bottom-color: #2e2a26; border-left-color: #4a6b48; background: #1e2218; }
             body.dark-mode .news-number, body.dark-mode .new-item-number { background: #2e2a26; color: #6b6760; }
-            body.dark-mode .word-header.collapsible:hover { background: #28241f; }
+            body.dark-mode .word-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover { background: #28241f; }
             body.dark-mode .tab-bar-wrapper { background: #221e1a; border-bottom-color: #2e2a26; }
             body.dark-mode .tab-arrow { color: #6b6760; }
             body.dark-mode .tab-arrow:hover { color: #e0a060; }
@@ -1125,14 +1137,26 @@ def render_html_content(
             /* ── Bookmark button ── */
             .bm-btn {
                 background: none; border: none; cursor: pointer;
-                font-size: 12px; opacity: 0; transition: opacity 0.15s;
-                padding: 0 3px; vertical-align: middle; line-height: 1;
-                color: inherit; flex-shrink: 0;
+                opacity: 0; transition: opacity 0.15s, color 0.15s;
+                padding: 0 4px; vertical-align: middle; line-height: 1;
+                color: var(--ok); flex-shrink: 0;
+                display: flex; align-items: center; justify-content: center;
+                align-self: flex-start;
+                margin-top: 2px;
+            }
+            .bm-btn svg {
+                transition: fill 0.15s, stroke 0.15s;
             }
             .news-title:hover .bm-btn,
             .rss-title:hover .bm-btn { opacity: 0.4; }
             .bm-btn:hover { opacity: 1 !important; }
-            .bm-btn.saved { opacity: 1 !important; filter: sepia(1) saturate(3) hue-rotate(5deg); }
+            .bm-btn.saved {
+                opacity: 1 !important;
+                color: #e0a060 !important;
+            }
+            .bm-btn.saved svg {
+                fill: currentColor;
+            }
             .bm-toast {
                 position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
                 background: #2a2824; color: #faf9f7; padding: 8px 18px;
@@ -1335,7 +1359,7 @@ def render_html_content(
             escaped_word = html_escape(stat["word"])
 
             stats_html += f"""
-                <div class="word-group" data-tab-index="{i - 1}">
+                <div class="word-group collapsed" data-tab-index="{i - 1}">
                     <div class="word-header">
                         <div class="word-info">
                             <div class="word-name">{escaped_word}</div>
@@ -1424,7 +1448,7 @@ def render_html_content(
 
                 if link_url:
                     escaped_url = html_escape(link_url)
-                    stats_html += f'<a href="{escaped_url}" target="_blank" class="news-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="热榜" title="保存书签">🔖</button>'
+                    stats_html += f'<a href="{escaped_url}" target="_blank" class="news-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="热榜" title="保存书签"><svg width="13" height="16" viewBox="0 0 13 16" fill="none"><path d="M1.5 1.5h10v13l-5-3.5-5 3.5V1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'
                 else:
                     stats_html += escaped_title
 
@@ -1559,10 +1583,11 @@ def render_html_content(
             keyword_count = len(titles)
 
             rss_html += f"""
-                    <div class="feed-group">
+                    <div class="feed-group collapsed">
                         <div class="feed-header">
                             <div class="feed-name">{html_escape(keyword)}</div>
                             <div class="feed-count">{keyword_count} 条</div>
+                            <div class="feed-index"><span class="collapse-icon">▼</span></div>
                         </div>"""
 
             for title_data in titles:
@@ -1593,7 +1618,7 @@ def render_html_content(
                 escaped_source_bm = html_escape(source_name or keyword or "RSS")
                 if url:
                     escaped_url = html_escape(url)
-                    rss_html += f'<a href="{escaped_url}" target="_blank" class="rss-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="{escaped_source_bm}" title="保存书签">🔖</button>'
+                    rss_html += f'<a href="{escaped_url}" target="_blank" class="rss-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="{escaped_source_bm}" title="保存书签"><svg width="13" height="16" viewBox="0 0 13 16" fill="none"><path d="M1.5 1.5h10v13l-5-3.5-5 3.5V1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'
                 else:
                     rss_html += escaped_title
 
@@ -1782,7 +1807,7 @@ def render_html_content(
                 escaped_title = html_escape(title)
                 if url:
                     escaped_url = html_escape(url)
-                    standalone_html += f'<a href="{escaped_url}" target="_blank" class="news-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="热榜" title="保存书签">🔖</button>'
+                    standalone_html += f'<a href="{escaped_url}" target="_blank" class="news-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="热榜" title="保存书签"><svg width="13" height="16" viewBox="0 0 13 16" fill="none"><path d="M1.5 1.5h10v13l-5-3.5-5 3.5V1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'
                 else:
                     standalone_html += escaped_title
 
@@ -1847,7 +1872,7 @@ def render_html_content(
                 escaped_feed_bm = html_escape(feed_name)
                 if url:
                     escaped_url = html_escape(url)
-                    standalone_html += f'<a href="{escaped_url}" target="_blank" class="news-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="{escaped_feed_bm}" title="保存书签">🔖</button>'
+                    standalone_html += f'<a href="{escaped_url}" target="_blank" class="news-link">{escaped_title}</a><button class="bm-btn" onclick="saveBookmark(event,this)" data-title="{escaped_title}" data-url="{escaped_url}" data-source="{escaped_feed_bm}" title="保存书签"><svg width="13" height="16" viewBox="0 0 13 16" fill="none"><path d="M1.5 1.5h10v13l-5-3.5-5 3.5V1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'
                 else:
                     standalone_html += escaped_title
 
@@ -2151,11 +2176,27 @@ def render_html_content(
                         if (group) group.classList.toggle('collapsed');
                     });
                 });
+                document.querySelectorAll('.feed-header').forEach(function(header) {
+                    header.addEventListener('click', function() {
+                        var wrapper = document.querySelector('.tab-bar-wrapper');
+                        if (document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden')) return;
+                        var group = header.closest('.feed-group');
+                        if (group) group.classList.toggle('collapsed');
+                    });
+                });
+                document.querySelectorAll('.ai-block-header').forEach(function(header) {
+                    header.addEventListener('click', function() {
+                        var wrapper = document.querySelector('.tab-bar-wrapper');
+                        if (document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden')) return;
+                        var block = header.closest('.ai-block');
+                        if (block) block.classList.toggle('collapsed');
+                    });
+                });
                 initCollapseVisibility();
             }
 
             function initCollapseVisibility() {
-                var headers = document.querySelectorAll('.word-header');
+                var headers = document.querySelectorAll('.word-header, .feed-header, .ai-block-header');
                 var wrapper = document.querySelector('.tab-bar-wrapper');
                 var isTabMode = document.body.classList.contains('wide-mode') && wrapper && !wrapper.classList.contains('tab-hidden');
                 headers.forEach(function(h) {
@@ -2163,7 +2204,7 @@ def render_html_content(
                     else { h.classList.add('collapsible'); }
                 });
                 if (isTabMode) {
-                    document.querySelectorAll('.word-group.collapsed').forEach(function(g) {
+                    document.querySelectorAll('.word-group.collapsed, .feed-group.collapsed, .ai-block.collapsed').forEach(function(g) {
                         g.classList.remove('collapsed');
                     });
                 }
