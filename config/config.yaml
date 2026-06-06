@@ -131,6 +131,11 @@ rss:
       name: "Hacker News"
       url: "https://hnrss.org/frontpage"
 
+    - id: "github-weekly-rank"
+      name: "GitHub 周飙升榜"
+      url: "https://github.com/OpenGithubs/github-weekly-rank/commits/main.atom"
+      max_age_days: 7
+
     - id: "ruanyifeng"
       name: "阮一峰的网络日志"
       url: "http://www.ruanyifeng.com/blog/atom.xml"
@@ -140,6 +145,104 @@ rss:
     - id: "yahoo-finance"
       name: "雅虎财经"
       url: "https://finance.yahoo.com/news/rssindex"
+
+    # 欧美头条
+    - id: "bbc-news"
+      name: "BBC News"
+      url: "https://feeds.bbci.co.uk/news/rss.xml"
+      max_age_days: 1
+
+    - id: "bbc-world"
+      name: "BBC World News"
+      url: "https://feeds.bbci.co.uk/news/world/rss.xml"
+      max_age_days: 1
+
+    - id: "abc-news"
+      name: "ABC News"
+      url: "https://abcnews.com/abcnews/topstories"
+      max_age_days: 1
+
+    - id: "npr-news"
+      name: "NPR News"
+      url: "https://feeds.npr.org/1001/rss.xml"
+      max_age_days: 1
+
+    - id: "france24"
+      name: "France 24"
+      url: "https://www.france24.com/en/rss"
+      max_age_days: 1
+
+    - id: "euronews"
+      name: "Euronews"
+      url: "https://www.euronews.com/rss"
+      max_age_days: 1
+
+    # Reddit
+    - id: "reddit-worldnews"
+      name: "Reddit r/worldnews"
+      url: "https://www.reddit.com/r/worldnews/.rss"
+      max_age_days: 1
+
+    - id: "reddit-technology"
+      name: "Reddit r/technology"
+      url: "https://www.reddit.com/r/technology/.rss"
+      max_age_days: 1
+
+    - id: "reddit-artificial"
+      name: "Reddit r/artificial"
+      url: "https://www.reddit.com/r/artificial/.rss"
+      max_age_days: 1
+
+    - id: "reddit-gaming"
+      name: "Reddit r/gaming"
+      url: "https://www.reddit.com/r/gaming/.rss"
+      max_age_days: 1
+
+    - id: "reddit-fashion"
+      name: "Reddit r/fashion"
+      url: "https://www.reddit.com/r/fashion/.rss"
+      max_age_days: 2
+
+    - id: "reddit-roblox"
+      name: "Reddit r/roblox"
+      url: "https://www.reddit.com/r/roblox/.rss"
+      max_age_days: 2
+
+    - id: "reddit-robloxdev"
+      name: "Reddit r/RobloxDev"
+      url: "https://www.reddit.com/r/RobloxDev/.rss"
+      max_age_days: 2
+
+    - id: "roblox-devforum-release"
+      name: "Roblox Studio Release Notes"
+      url: "https://devforum.roblox.com/c/updates/release-notes.rss"
+      max_age_days: 14
+
+    - id: "roblox-devforum-latest"
+      name: "Roblox Developer Forum"
+      url: "https://devforum.roblox.com/latest.rss"
+      max_age_days: 1
+
+    - id: "reddit-valorant-competitive"
+      name: "Reddit r/ValorantCompetitive"
+      url: "https://www.reddit.com/r/ValorantCompetitive/.rss"
+      max_age_days: 2
+
+    # 时尚行业
+    - id: "wwd"
+      name: "WWD 女装日报"
+      url: "https://wwd.com/feed/"
+      max_age_days: 2
+
+    - id: "dazed"
+      name: "Dazed Digital"
+      url: "https://www.dazeddigital.com/rss"
+      max_age_days: 3
+
+    - id: "bbc-arts"
+      name: "BBC Arts & Entertainment"
+      url: "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml"
+      max_age_days: 2
 
     # 自定义源示例
     # - id: "custom-feed"
@@ -226,11 +329,11 @@ display:
   # 调整顺序：剪切粘贴整行即可
   # 要显示某个区域，需同时：1. 在此列表中  2. 下方 regions 对应开关为 true
   region_order:
-    - new_items                           # 1️⃣ 新增热点区域
-    - hotlist                             # 2️⃣ 热榜区域（关键词匹配 / AI 智能筛选）
-    - rss                                 # 3️⃣ RSS 订阅区域
-    - standalone                          # 4️⃣ 独立展示区
-    - ai_analysis                         # 5️⃣ AI 分析区域
+    - ai_analysis                         # 1️⃣ AI 分析区域
+    - new_items                           # 2️⃣ 新增热点区域
+    - hotlist                             # 3️⃣ 热榜区域（关键词匹配 / AI 智能筛选）
+    - rss                                 # 4️⃣ RSS 订阅区域
+    - standalone                          # 5️⃣ 独立展示区
 
   # 推送区域开关（需配合上方 region_order 使用）
   regions:
@@ -312,7 +415,7 @@ storage:
   # - auto: 自动选择（GitHub Actions 且配置了远程存储 → remote，否则 → local）
   # - local: 本地 SQLite + TXT/HTML 文件
   # - remote: 远程云存储（S3 兼容协议，支持 R2/OSS/COS 等）
-  backend: "auto"
+  backend: "local"
 
   # 数据格式选项
   formats:
@@ -363,7 +466,7 @@ ai:
   # 完整列表: https://docs.litellm.ai/docs/providers
   # 如果你对于看英文文档比较头疼，那么可以点击页面右下角的 【Ask AI】 ,用中文询问怎么配置
 
-  model: "deepseek/deepseek-v4-flash"
+  model: "gemini/gemini-3.1-flash-lite"
 
   api_key: ""                       # API Key（建议使用环境变量 AI_API_KEY）
   

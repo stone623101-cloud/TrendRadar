@@ -256,3 +256,46 @@
 
 # 产业政策
 生产力
+
+
+# ═══════════════════════════════════════════════════════════════
+#                      时尚行业 & 英国院校
+# ═══════════════════════════════════════════════════════════════
+
+[UAL 院校]
+/Central Saint Martins|CSM graduate|CSM fashion/ => Central Saint Martins
+/London College of Fashion|\bLCF\b/ => London College of Fashion
+/London College of Communication|\bLCC\b/ => London College of Communication
+/University of the Arts London|\bUAL\b/ => UAL
+
+[英国时尚]
+/British Fashion Council|\bBFC\b/ => 英国时尚协会
+/London Fashion Week|\bLFW\b/ => 伦敦时装周
+/graduate show|graduation show/ => 时尚毕业展
+
+[时尚品牌]
+/Louis Vuitton|\bLV\b|Gucci|Chanel|Hermès|Prada|Dior|Balenciaga/ => 奢侈品牌
+/\bZARA\b|\bH&M\b|Uniqlo|fast fashion/ => 快时尚
+/streetwear|Supreme|Off-White/ => 潮牌
+
+[可持续时尚]
+/sustainable fashion|sustainability.*fashion|fashion.*sustainability/ => 可持续时尚
+
+
+# ═══════════════════════════════════════════════════════════════
+#                         电竞与体育
+# ═══════════════════════════════════════════════════════════════
+
+[Roblox]
+/\bRoblox\b|\bRoblox Studio\b/ => Roblox
+/Luau|Roblox.*update|Studio.*update/ => Roblox Studio
+
+[XLG 伦敦大师赛]
+/XLG|London Masters|伦敦大师赛/ => XLG 伦敦大师赛
+
+[无畏契约伦敦大师赛]
+无畏契约伦敦大师赛
+/VCT.*London|London.*VCT|Masters.*London|London.*Masters/ => VCT London Masters
+/Valorant.*London|VALORANT.*London/ => Valorant London
+铜箱馆
+/EDward Gaming|Xi Lai Gaming|Dragon Ranger Gaming|Paper Rex|FULL SENSE|Global Esports|Team Heretics|Team Vitality|FUT Esports|G2 Esports|Leviatan|NRG Esports/ => VCT参赛队

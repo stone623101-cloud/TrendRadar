@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-f', 'Dockerfile.deploy', '-t', 'asia-east1-docker.pkg.dev/retail-ai-analytics-scm/trendradar/trendradar-job:latest', '.']
+images:
+- 'asia-east1-docker.pkg.dev/retail-ai-analytics-scm/trendradar/trendradar-job:latest'
