@@ -1192,6 +1192,30 @@ def render_html_content(
             body.dark-mode .filter-input:focus { border-color: #e0a060; }
             body.dark-mode .filter-input::placeholder { color: #6b6760; }
             body.dark-mode .word-group.focused > .word-header { border-left-color: #e0a060; }
+
+            /* ── 区块内数据源 chips（RSS / 独立展示区）── */
+            .subfilter-row {
+                display: flex; flex-wrap: wrap; gap: 5px;
+                padding: 9px 20px 10px; background: var(--bg);
+                border-bottom: 1px solid var(--line-2);
+            }
+            .subfilter-chip {
+                padding: 3px 10px; border: 1px solid var(--line);
+                border-radius: 12px; background: var(--panel);
+                color: var(--ink-2); font-size: 11px; font-family: var(--font-ui);
+                font-weight: 500; cursor: pointer; transition: all 0.15s;
+                white-space: nowrap; line-height: 1.6;
+            }
+            .subfilter-chip:hover { border-color: var(--ok); color: var(--ok); }
+            .subfilter-chip.active { background: var(--ok); border-color: var(--ok); color: #fff; }
+            .subfilter-chip .sf-count { opacity: 0.7; margin-left: 4px; font-weight: 600; }
+            /* 启用 chips 后，分组在宽屏也单列铺满 */
+            body.wide-mode .rss-feeds-grid.subfiltered,
+            body.wide-mode .standalone-groups-grid.subfiltered { display: block; }
+            body.dark-mode .subfilter-row { background: #221e1a; border-bottom-color: #2e2a26; }
+            body.dark-mode .subfilter-chip { background: #1e1b17; border-color: #2e2a26; color: #9a9690; }
+            body.dark-mode .subfilter-chip:hover { border-color: #7aab78; color: #7aab78; }
+            body.dark-mode .subfilter-chip.active { background: #4a6b48; border-color: #4a6b48; color: #fff; }
         </style>
     </head>
     <body>
@@ -1599,12 +1623,13 @@ def render_html_content(
             return ""
 
         rss_html = f"""
-                <div class="rss-section collapsed">
+                <div class="rss-section">
                     <div class="rss-section-header">
                         <span class="collapse-icon">▼</span>
                         <div class="rss-section-title">{title}</div>
                         <div class="rss-section-count">{total_count} 条</div>
                     </div>
+                    <div class="subfilter-row"></div>
                     <div class="rss-feeds-grid">"""
 
         # 按关键词分组渲染（与热榜格式一致）
@@ -1617,7 +1642,7 @@ def render_html_content(
             keyword_count = len(titles)
 
             rss_html += f"""
-                    <div class="feed-group collapsed">
+                    <div class="feed-group">
                         <div class="feed-header">
                             <span class="collapse-icon">▼</span>
                             <div class="feed-name">{html_escape(keyword)}</div>
@@ -1729,12 +1754,13 @@ def render_html_content(
             return ""
 
         standalone_html = f"""
-                <div class="standalone-section collapsed">
+                <div class="standalone-section">
                     <div class="standalone-section-header">
                         <span class="collapse-icon">▼</span>
                         <div class="standalone-section-title">独立展示区</div>
                         <div class="standalone-section-count">{total_count} 条</div>
-                    </div>"""
+                    </div>
+                    <div class="subfilter-row"></div>"""
 
 
         standalone_html += """
@@ -1748,7 +1774,7 @@ def render_html_content(
                 continue
 
             standalone_html += f"""
-                    <div class="standalone-group collapsed">
+                    <div class="standalone-group">
                         <div class="standalone-header">
                             <span class="collapse-icon">▼</span>
                             <div class="standalone-name">{html_escape(platform_name)}</div>
@@ -1840,7 +1866,7 @@ def render_html_content(
                 continue
 
             standalone_html += f"""
-                    <div class="standalone-group collapsed">
+                    <div class="standalone-group">
                         <div class="standalone-header">
                             <span class="collapse-icon">▼</span>
                             <div class="standalone-name">{html_escape(feed_name)}</div>
@@ -2190,12 +2216,6 @@ def render_html_content(
                         if (section) section.classList.toggle('collapsed');
                     });
                 });
-                document.querySelectorAll('.feed-header').forEach(function(header) {
-                    header.addEventListener('click', function() {
-                        var group = header.closest('.feed-group');
-                        if (group) group.classList.toggle('collapsed');
-                    });
-                });
                 document.querySelectorAll('.ai-block-header').forEach(function(header) {
                     header.addEventListener('click', function() {
                         var block = header.closest('.ai-block');
@@ -2214,17 +2234,11 @@ def render_html_content(
                         if (section) section.classList.toggle('collapsed');
                     });
                 });
-                document.querySelectorAll('.standalone-header').forEach(function(header) {
-                    header.addEventListener('click', function() {
-                        var group = header.closest('.standalone-group');
-                        if (group) group.classList.toggle('collapsed');
-                    });
-                });
                 initCollapseVisibility();
             }
 
             function initCollapseVisibility() {
-                var headers = document.querySelectorAll('.word-header, .rss-section-header, .feed-header, .ai-block-header, .ai-section-header, .standalone-section-header, .standalone-header');
+                var headers = document.querySelectorAll('.word-header, .rss-section-header, .ai-block-header, .ai-section-header, .standalone-section-header');
                 headers.forEach(function(h) {
                     h.classList.add('collapsible');
                 });
@@ -2244,6 +2258,18 @@ def render_html_content(
                         g.style.display = '';
                     }
                 });
+                // 截图时展开所有被 chips 隐藏的数据源分组
+                state.hiddenSubGroups = [];
+                document.querySelectorAll('.feed-group, .standalone-group').forEach(function(g) {
+                    if (g.style.display === 'none') {
+                        state.hiddenSubGroups.push(g);
+                        g.style.display = '';
+                    }
+                });
+                document.querySelectorAll('.subfilter-row').forEach(function(el) {
+                    el.dataset.prevDisplay = el.style.display || '';
+                    el.style.display = 'none';
+                });
                 document.querySelectorAll('.tab-bar-wrapper, .search-bar, .fab-bar, .toggle-wide-btn').forEach(function(el) {
                     el.dataset.prevDisplay = el.style.display || '';
                     el.style.display = 'none';
@@ -2262,6 +2288,11 @@ def render_html_content(
                 var groups = document.querySelectorAll('.word-group[data-tab-index]');
                 state.hiddenGroups.forEach(function(i) {
                     if (groups[i]) groups[i].style.display = 'none';
+                });
+                (state.hiddenSubGroups || []).forEach(function(g) { g.style.display = 'none'; });
+                document.querySelectorAll('.subfilter-row').forEach(function(el) {
+                    el.style.display = el.dataset.prevDisplay || '';
+                    delete el.dataset.prevDisplay;
                 });
                 document.querySelectorAll('.tab-bar-wrapper, .search-bar, .fab-bar, .toggle-wide-btn').forEach(function(el) {
                     el.style.display = el.dataset.prevDisplay || '';
@@ -2877,6 +2908,43 @@ def render_html_content(
                 matched.concat(unmatched).forEach(function(g) { parent.appendChild(g); });
             }
 
+            // ── 区块内数据源 chips（RSS / 独立展示区单选切换）──
+            function initSubFilters() {
+                document.querySelectorAll('.rss-section').forEach(function(section) {
+                    setupSectionChips(section, '.rss-feeds-grid', '.feed-group', '.feed-name', '.feed-count');
+                });
+                document.querySelectorAll('.standalone-section').forEach(function(section) {
+                    setupSectionChips(section, '.standalone-groups-grid', '.standalone-group', '.standalone-name', '.standalone-count');
+                });
+            }
+
+            function setupSectionChips(section, gridSel, groupSel, nameSel, countSel) {
+                var grid = section.querySelector(gridSel);
+                var row = section.querySelector('.subfilter-row');
+                if (!grid || !row) return;
+                var groups = Array.from(grid.querySelectorAll(groupSel));
+                if (groups.length <= 1) { row.remove(); return; }
+                grid.classList.add('subfiltered');
+
+                function show(idx) {
+                    groups.forEach(function(g, i) { g.style.display = (i === idx) ? '' : 'none'; });
+                    row.querySelectorAll('.subfilter-chip').forEach(function(c, i) { c.classList.toggle('active', i === idx); });
+                }
+
+                groups.forEach(function(g, i) {
+                    var nameEl = g.querySelector(nameSel);
+                    var name = nameEl ? nameEl.textContent.trim() : ('源 ' + (i + 1));
+                    var countEl = countSel ? g.querySelector(countSel) : null;
+                    var countNum = countEl ? (countEl.textContent.match(/\\d+/) || [''])[0] : '';
+                    var chip = document.createElement('button');
+                    chip.className = 'subfilter-chip';
+                    chip.innerHTML = name + (countNum ? '<span class="sf-count">' + countNum + '</span>' : '');
+                    chip.addEventListener('click', function() { show(i); });
+                    row.appendChild(chip);
+                });
+                show(0);
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 window.scrollTo(0, 0);
 
@@ -2906,6 +2974,7 @@ def render_html_content(
                 initTabs();
                 initBackToTop();
                 initCollapse();
+                initSubFilters();
 
                 // 初始化筛选栏并恢复上次状态
                 initFilterBar();
