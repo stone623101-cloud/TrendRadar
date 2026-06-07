@@ -1366,15 +1366,8 @@ def render_html_content(
     if report_data["stats"]:
         total_count = len(report_data["stats"])
 
-        # 生成 Tab 栏 HTML
-        total_news_count = sum(s["count"] for s in report_data["stats"])
-        tab_bar_html = '<div class="tab-bar-wrapper"><div class="tab-bar">'
-        tab_bar_html += f'<button class="tab-btn" data-tab-index="all">全部<span class="tab-count">{total_news_count}</span></button>'
-        for tab_i, tab_stat in enumerate(report_data["stats"]):
-            escaped_tab_word = html_escape(tab_stat["word"])
-            tab_count = tab_stat["count"]
-            tab_bar_html += f'<button class="tab-btn" data-tab-index="{tab_i}">{escaped_tab_word}<span class="tab-count">{tab_count}</span></button>'
-        tab_bar_html += '</div></div>'
+        # Tab 栏已由顶部关键词 chips 替代，不再生成
+        tab_bar_html = ""
 
         for i, stat in enumerate(report_data["stats"], 1):
             count = stat["count"]
@@ -1390,7 +1383,7 @@ def render_html_content(
             escaped_word = html_escape(stat["word"])
 
             stats_html += f"""
-                <div class="word-group collapsed" data-tab-index="{i - 1}" data-word="{escaped_word}">
+                <div class="word-group" data-tab-index="{i - 1}" data-word="{escaped_word}">
                     <div class="word-header">
                         <div class="word-info">
                             <div class="word-name">{escaped_word}</div>
@@ -1992,8 +1985,6 @@ def render_html_content(
                     <div class="tip-row"><span>暗色模式</span><span class="tip-key">D</span></div>
                     <div class="tip-row"><span>关注词</span><span class="tip-key">F</span></div>
                     <div class="tip-row"><span>搜索</span><span class="tip-key">/</span></div>
-                    <div class="tip-row"><span>上一个 Tab</span><span class="tip-key">←</span></div>
-                    <div class="tip-row"><span>下一个 Tab</span><span class="tip-key">→</span></div>
                     <div class="tip-row"><span>序号可复制</span><span class="tip-key">点击</span></div>
                 </div>
             </button>
@@ -2874,7 +2865,7 @@ def render_html_content(
                 groups.forEach(function(g) { g.classList.remove('focused'); });
                 var lv = value.trim().toLowerCase();
                 if (!lv) return;
-                var kws = lv.split(/[\s,，、]+/).filter(Boolean);
+                var kws = lv.split(/[\\s,，、]+/).filter(Boolean);
                 var matched = [], unmatched = [];
                 groups.forEach(function(g) {
                     var word = (g.dataset.word || '').toLowerCase();
