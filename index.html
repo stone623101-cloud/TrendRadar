@@ -72,6 +72,44 @@
             cursor: not-allowed;
         }
 
+        /* ── 热度标签 ── */
+        .heat-badge {
+            display: inline-flex; align-items: center; gap: 1px;
+            font-size: 10px; font-weight: 700;
+            padding: 1px 5px; border-radius: 2px; flex-shrink: 0;
+        }
+        .heat-1 { background: #f3f4f6; color: #9ca3af; }
+        .heat-2 { background: #fef9c3; color: #ca8a04; }
+        .heat-3 { background: #ffedd5; color: #ea580c; }
+        .heat-4 { background: #fee2e2; color: #dc2626; }
+        .heat-5 { background: #dc2626; color: #fff; }
+
+        /* ── 筛选栏（chips + 搜索框）── */
+        .filter-bar {
+            padding: 10px 16px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fff;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+        .filter-chip {
+            padding: 3px 10px; border: 1px solid #e5e7eb;
+            border-radius: 12px; background: #f8f9fa;
+            color: #555; font-size: 11px; font-weight: 500;
+            cursor: pointer; transition: all 0.15s; white-space: nowrap; line-height: 1.6;
+        }
+        .filter-chip:hover { border-color: #4f46e5; color: #4f46e5; }
+        .filter-chip.active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+        .filter-input {
+            width: 100%; padding: 6px 12px; border: 1px solid #e5e7eb;
+            background: #f8f9fa; color: #333; font-size: 12px; font-family: inherit;
+            outline: none; transition: border-color 0.15s; border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .filter-input:focus { border-color: #4f46e5; }
+        .filter-input::placeholder { color: #aaa; }
+        .word-group.focused > .word-header { border-left: 3px solid #4f46e5; padding-left: 21px; }
+
         .header-title {
             font-size: 22px;
             font-weight: 700;
@@ -360,7 +398,11 @@
         </div>
 
         <div class="content">
-            <div class="word-group">
+            <div class="filter-bar">
+                <div class="chip-row" id="chip-row"></div>
+                <input type="text" class="filter-input" id="filter-input" placeholder="搜索关键词，匹配词组排到前面… 如：英国 AI" oninput="handleFilterInput(this.value)">
+            </div>
+            <div class="word-group" data-word="ai 人工智能">
                 <div class="word-header">
                     <div class="word-info">
                         <div class="word-name">ai 人工智能</div>
@@ -373,6 +415,7 @@
                     <div class="news-number">1</div>
                     <div class="news-content">
                         <div class="news-header">
+                            <span class="heat-badge heat-4">⚡4</span>
                             <span class="source-name">财联社热门</span>
                             <span class="rank-num high">7-8</span>
                             <span class="time-info">00:23~07:17</span>
@@ -388,6 +431,7 @@
                     <div class="news-number">2</div>
                     <div class="news-content">
                         <div class="news-header">
+                            <span class="heat-badge heat-4">⚡4</span>
                             <span class="source-name">tieba</span>
                             <span class="rank-num">18-19</span>
                             <span class="time-info">00:23~07:17</span>
@@ -403,6 +447,7 @@
                     <div class="news-number">3</div>
                     <div class="news-content">
                         <div class="news-header">
+                            <span class="heat-badge heat-4">⚡4</span>
                             <span class="source-name">zhihu</span>
                             <span class="rank-num top">5-13</span>
                             <span class="time-info">00:23~07:17</span>
@@ -415,7 +460,7 @@
                 </div>
             </div>
 
-            <div class="word-group">
+            <div class="word-group" data-word="DeepSeek 梁文锋">
                 <div class="word-header">
                     <div class="word-info">
                         <div class="word-name">DeepSeek 梁文锋</div>
@@ -428,6 +473,7 @@
                     <div class="news-number">1</div>
                     <div class="news-content">
                         <div class="news-header">
+                            <span class="heat-badge heat-4">⚡4</span>
                             <span class="source-name">华尔街见闻</span>
                             <span class="rank-num high">8-9</span>
                             <span class="time-info">00:23~07:17</span>
@@ -440,7 +486,7 @@
                 </div>
             </div>
 
-            <div class="word-group">
+            <div class="word-group" data-word="哪吒 饺子">
                 <div class="word-header">
                     <div class="word-info">
                         <div class="word-name">哪吒 饺子</div>
@@ -453,6 +499,7 @@
                     <div class="news-number">1</div>
                     <div class="news-content">
                         <div class="news-header">
+                            <span class="heat-badge heat-3">⚡3</span>
                             <span class="source-name">百度热搜</span>
                             <span class="rank-num">24-30</span>
                             <span class="time-info">00:57~06:55</span>
@@ -465,7 +512,7 @@
                 </div>
             </div>
 
-            <div class="word-group">
+            <div class="word-group" data-word="米哈游 原神 星穹铁道">
                 <div class="word-header">
                     <div class="word-info">
                         <div class="word-name">米哈游 原神 星穹铁道</div>
@@ -478,6 +525,7 @@
                     <div class="news-number">1</div>
                     <div class="news-content">
                         <div class="news-header">
+                            <span class="heat-badge heat-3">⚡3</span>
                             <span class="source-name">zhihu</span>
                             <span class="rank-num top">5</span>
                             <span class="time-info">06:55~07:17</span>
@@ -739,8 +787,76 @@
             }
         }
         
+        // ── 筛选栏（chips + 搜索框）──
+
+        function initFilterBar() {
+            var groups = Array.from(document.querySelectorAll('.word-group[data-word]'));
+            var chipRow = document.getElementById('chip-row');
+            if (!chipRow || !groups.length) return;
+            groups.forEach(function(g) {
+                var word = g.dataset.word;
+                var chip = document.createElement('button');
+                chip.className = 'filter-chip';
+                chip.textContent = word;
+                chip.dataset.word = word;
+                chip.addEventListener('click', function() {
+                    chip.classList.toggle('active');
+                    var activeWords = Array.from(chipRow.querySelectorAll('.filter-chip.active')).map(function(c) { return c.dataset.word; });
+                    var combined = activeWords.join(' ');
+                    var input = document.getElementById('filter-input');
+                    if (input) input.value = combined;
+                    _applyFilter(combined);
+                    try {
+                        if (combined) localStorage.setItem('trendradar-filter', combined);
+                        else localStorage.removeItem('trendradar-filter');
+                    } catch(e) {}
+                });
+                chipRow.appendChild(chip);
+            });
+        }
+
+        function handleFilterInput(value) {
+            var lv = value.trim().toLowerCase();
+            document.querySelectorAll('.filter-chip').forEach(function(c) {
+                var cw = c.dataset.word.toLowerCase();
+                c.classList.toggle('active', lv.length > 0 && (cw.indexOf(lv) !== -1 || lv.indexOf(cw) !== -1));
+            });
+            _applyFilter(value);
+            try {
+                if (value.trim()) localStorage.setItem('trendradar-filter', value);
+                else localStorage.removeItem('trendradar-filter');
+            } catch(e) {}
+        }
+
+        function _applyFilter(value) {
+            var content = document.querySelector('.content');
+            if (!content) return;
+            var groups = Array.from(content.querySelectorAll('.word-group'));
+            if (!groups.length) return;
+            groups.forEach(function(g) { g.classList.remove('focused'); });
+            var lv = value.trim().toLowerCase();
+            if (!lv) return;
+            var kws = lv.split(/[\s,，、]+/).filter(Boolean);
+            var matched = [], unmatched = [];
+            groups.forEach(function(g) {
+                var word = (g.dataset.word || '').toLowerCase();
+                var hit = kws.some(function(kw) { return word.indexOf(kw) !== -1; });
+                if (hit) { g.classList.add('focused'); matched.push(g); }
+                else { unmatched.push(g); }
+            });
+            var parent = groups[0].parentNode;
+            matched.concat(unmatched).forEach(function(g) { parent.appendChild(g); });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo(0, 0);
+            initFilterBar();
+            var saved = null;
+            try { saved = localStorage.getItem('trendradar-filter'); } catch(e) {}
+            if (saved) {
+                var fi = document.getElementById('filter-input');
+                if (fi) { fi.value = saved; handleFilterInput(saved); }
+            }
         });
     </script>
 </body>

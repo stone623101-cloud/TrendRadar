@@ -480,11 +480,14 @@ def render_html_content(
                 justify-content: space-between;
                 align-items: flex-start;
                 gap: 8px;
+                width: 100%;
             }
 
             .news-link {
                 color: var(--ink);
                 text-decoration: none;
+                flex: 1 1 auto;
+                min-width: 0;
             }
 
             .news-link:hover {
@@ -673,30 +676,46 @@ def render_html_content(
             }
 
             /* RSS 订阅内容样式 */
-            .rss-section {
+            .rss-section,
+            .standalone-section,
+            .ai-section {
                 border-top: 2px solid var(--line);
             }
+            .section-divider.rss-section,
+            .section-divider.standalone-section,
+            .section-divider.ai-section {
+                border-top: none;
+            }
 
-            .rss-section-header {
+            .rss-section-header,
+            .standalone-section-header,
+            .ai-section-header {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: flex-start;
+                gap: 8px;
                 padding: 12px 20px 10px;
                 background: var(--panel);
                 border-bottom: 1px solid var(--line-2);
             }
 
-            .rss-section-title {
+            .rss-section-title,
+            .standalone-section-title,
+            .ai-section-title {
                 font-size: 11px;
                 font-weight: 700;
                 color: var(--ok);
                 letter-spacing: 0.08em;
                 text-transform: uppercase;
+                min-width: 0;
             }
 
-            .rss-section-count {
+            .rss-section-count,
+            .standalone-section-count,
+            .ai-section-badge {
                 color: var(--muted);
                 font-size: 12px;
+                margin-left: auto;
             }
 
             .feed-group {
@@ -707,25 +726,40 @@ def render_html_content(
                 border-bottom: none;
             }
 
-            .feed-header {
+            .feed-header,
+            .standalone-header,
+            .ai-block-header {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: flex-start;
+                gap: 8px;
                 padding: 9px 20px 8px;
                 border-bottom: 1px solid var(--line-2);
                 background: var(--bg);
+            }
+
+            .feed-header {
                 border-left: 2px solid var(--ok);
             }
 
-            .feed-name {
+            .feed-name,
+            .standalone-name,
+            .ai-block-title {
                 font-size: 11px;
                 font-weight: 700;
-                color: var(--ok);
+                color: var(--ink);
                 letter-spacing: 0.06em;
                 text-transform: uppercase;
+                min-width: 0;
             }
 
-            .feed-count {
+            .feed-name {
+                color: var(--ok);
+            }
+
+            .feed-count,
+            .standalone-count,
+            .ai-block-count {
                 color: var(--muted);
                 font-size: 12px;
             }
@@ -767,11 +801,14 @@ def render_html_content(
                 justify-content: space-between;
                 align-items: flex-start;
                 gap: 8px;
+                width: 100%;
             }
 
             .rss-link {
                 color: var(--ink);
                 text-decoration: none;
+                flex: 1 1 auto;
+                min-width: 0;
             }
 
             .rss-link:hover {
@@ -790,36 +827,6 @@ def render_html_content(
             }
 
             /* 独立展示区样式 */
-            .standalone-section {
-                border-top: 2px solid var(--line);
-            }
-            /* 当 section-divider 叠加时，不重复渲染 border-top */
-            .section-divider.standalone-section {
-                border-top: none;
-            }
-
-            .standalone-section-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 12px 20px 10px;
-                background: var(--panel);
-                border-bottom: 1px solid var(--line-2);
-            }
-
-            .standalone-section-title {
-                font-size: 11px;
-                font-weight: 700;
-                color: var(--ok);
-                letter-spacing: 0.08em;
-                text-transform: uppercase;
-            }
-
-            .standalone-section-count {
-                color: var(--muted);
-                font-size: 12px;
-            }
-
             .standalone-group {
                 border-bottom: 1px solid var(--line-2);
             }
@@ -828,77 +835,32 @@ def render_html_content(
                 border-bottom: none;
             }
 
-            .standalone-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 9px 20px;
-                border-bottom: 1px solid var(--line-2);
-                background: var(--bg);
-            }
-
-            .standalone-name {
-                font-size: 11px;
-                font-weight: 700;
-                color: var(--ink);
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-            }
-
-            .standalone-count {
-                color: var(--muted);
-                font-size: 12px;
-            }
-
             /* AI 分析区块样式 */
-            .ai-section {
-                border-top: 2px solid var(--line);
-                padding: 18px 20px;
-                border-left: 3px solid var(--hi);
-            }
-
-            .ai-section-header {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 14px;
-            }
-
             .ai-section-title {
-                font-size: 11px;
-                font-weight: 700;
                 color: var(--hi);
-                letter-spacing: 0.08em;
-                text-transform: uppercase;
             }
 
             .ai-section-badge {
-                background: var(--hi);
-                color: white;
-                font-size: 10px;
+                color: var(--hi);
                 font-weight: 700;
-                padding: 2px 7px;
-                border-radius: 2px;
             }
 
             .ai-block {
-                margin-bottom: 12px;
-                padding: 14px;
                 background: var(--panel);
-                border-left: 2px solid var(--line);
+                border-bottom: 1px solid var(--line-2);
             }
 
             .ai-block:last-child {
-                margin-bottom: 0;
+                border-bottom: none;
             }
 
             .ai-block-title {
-                font-size: 11px;
-                font-weight: 700;
                 color: var(--hi);
-                margin-bottom: 6px;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
+            }
+
+            .ai-block-count {
+                color: var(--muted);
+                font-size: 12px;
             }
 
             .ai-block-content {
@@ -907,33 +869,34 @@ def render_html_content(
                 line-height: 1.65;
                 color: var(--ink-2);
                 white-space: pre-wrap;
+                padding: 12px 20px 14px;
+            }
+
+            .ai-error,
+            .ai-warning,
+            .ai-info {
+                margin: 14px 20px;
+                padding: 14px;
+                border-radius: 2px;
+                font-size: 13px;
             }
 
             .ai-error {
-                padding: 14px;
                 background: #fef2f2;
                 border: 1px solid #fecaca;
-                border-radius: 2px;
                 color: #991b1b;
-                font-size: 13px;
             }
 
             .ai-warning {
-                padding: 14px;
                 background: #fffbeb;
                 border: 1px solid #fde68a;
-                border-radius: 2px;
                 color: #92400e;
-                font-size: 13px;
             }
 
             .ai-info {
-                padding: 14px;
                 background: #f0f9ff;
                 border: 1px solid #bae6fd;
-                border-radius: 2px;
                 color: #0369a1;
-                font-size: 13px;
             }
 
             /* ===== 浏览器增强样式 ===== */
@@ -1038,11 +1001,13 @@ def render_html_content(
 
             /* 折叠/展开 */
             .collapse-icon { display: none; margin-right: 6px; font-size: 11px; color: var(--faint); transition: transform 0.2s; user-select: none; }
-            .word-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible, .ai-section-header.collapsible, .standalone-section-header.collapsible, .standalone-header.collapsible { cursor: pointer; }
-            .word-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon, .ai-section-header.collapsible .collapse-icon, .standalone-section-header.collapsible .collapse-icon, .standalone-header.collapsible .collapse-icon { display: inline; }
-            .word-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover, .ai-section-header.collapsible:hover, .standalone-section-header.collapsible:hover, .standalone-header.collapsible:hover { background: #ebe8e0; }
+            .word-header.collapsible, .rss-section-header.collapsible, .feed-header.collapsible, .ai-block-header.collapsible, .ai-section-header.collapsible, .standalone-section-header.collapsible, .standalone-header.collapsible { cursor: pointer; }
+            .word-header.collapsible .collapse-icon, .rss-section-header.collapsible .collapse-icon, .feed-header.collapsible .collapse-icon, .ai-block-header.collapsible .collapse-icon, .ai-section-header.collapsible .collapse-icon, .standalone-section-header.collapsible .collapse-icon, .standalone-header.collapsible .collapse-icon { display: inline; }
+            .word-header.collapsible:hover, .rss-section-header.collapsible:hover, .feed-header.collapsible:hover, .ai-block-header.collapsible:hover, .ai-section-header.collapsible:hover, .standalone-section-header.collapsible:hover, .standalone-header.collapsible:hover { background: #ebe8e0; }
             .word-group.collapsed .news-item { display: none; }
             .word-group.collapsed .collapse-icon { transform: rotate(-90deg); }
+            .rss-section.collapsed .rss-feeds-grid { display: none; }
+            .rss-section.collapsed .collapse-icon { transform: rotate(-90deg); }
             .feed-group.collapsed .rss-item { display: none; }
             .feed-group.collapsed .collapse-icon { transform: rotate(-90deg); }
             .ai-block.collapsed .ai-block-content { display: none; }
@@ -1074,7 +1039,7 @@ def render_html_content(
             body.dark-mode .header { background: #111009; border-bottom-color: #2e2a26; }
             body.dark-mode .word-header { background: #1e1b17; border-bottom-color: #2e2a26; }
             body.dark-mode .word-name, body.dark-mode .new-section-title, body.dark-mode .standalone-name, body.dark-mode .new-item-title, body.dark-mode .project-name { color: #e0dbd2; }
-            body.dark-mode .word-count, body.dark-mode .word-index, body.dark-mode .source-name, body.dark-mode .time-info, body.dark-mode .feed-count, body.dark-mode .new-source-title, body.dark-mode .standalone-count, body.dark-mode .rss-section-count, body.dark-mode .standalone-section-count, body.dark-mode .rss-time, body.dark-mode .rss-summary { color: #9a9690; }
+            body.dark-mode .word-count, body.dark-mode .word-index, body.dark-mode .source-name, body.dark-mode .time-info, body.dark-mode .feed-count, body.dark-mode .new-source-title, body.dark-mode .standalone-count, body.dark-mode .ai-block-count, body.dark-mode .rss-section-count, body.dark-mode .standalone-section-count, body.dark-mode .ai-section-badge, body.dark-mode .rss-time, body.dark-mode .rss-summary { color: #9a9690; }
             body.dark-mode .info-value { color: #e0dbd2; }
             body.dark-mode .news-link, body.dark-mode .rss-link { color: #c8c4bc; }
             body.dark-mode .news-link:hover { color: #e0a060; }
@@ -1084,11 +1049,11 @@ def render_html_content(
             body.dark-mode .count-info { color: #7aab78; }
             body.dark-mode .rss-author, body.dark-mode .feed-name, body.dark-mode .rss-section-title, body.dark-mode .standalone-section-title { color: #7aab78; }
             body.dark-mode .news-item, body.dark-mode .new-item, body.dark-mode .standalone-item, body.dark-mode .new-source-title { border-bottom-color: #2e2a26; }
-            body.dark-mode .standalone-header { border-bottom-color: #2e2a26; background: #221e1a; }
+            body.dark-mode .standalone-header, body.dark-mode .ai-block-header { border-bottom-color: #2e2a26; background: #221e1a; }
             body.dark-mode .section-divider { border-top-color: #2e2a26; }
             body.dark-mode .feed-header { border-bottom-color: #2e2a26; border-left-color: #4a6b48; background: #1e2218; }
             body.dark-mode .news-number, body.dark-mode .new-item-number { background: #2e2a26; color: #6b6760; }
-            body.dark-mode .word-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover, body.dark-mode .ai-section-header.collapsible:hover, body.dark-mode .standalone-section-header.collapsible:hover, body.dark-mode .standalone-header.collapsible:hover { background: #28241f; }
+            body.dark-mode .word-header.collapsible:hover, body.dark-mode .rss-section-header.collapsible:hover, body.dark-mode .feed-header.collapsible:hover, body.dark-mode .ai-block-header.collapsible:hover, body.dark-mode .ai-section-header.collapsible:hover, body.dark-mode .standalone-section-header.collapsible:hover, body.dark-mode .standalone-header.collapsible:hover { background: #28241f; }
             body.dark-mode .tab-bar-wrapper { background: #221e1a; border-bottom-color: #2e2a26; }
             body.dark-mode .tab-arrow { color: #6b6760; }
             body.dark-mode .tab-arrow:hover { color: #e0a060; }
@@ -1102,10 +1067,9 @@ def render_html_content(
             body.dark-mode .search-input:focus { border-color: #e0a060; }
             body.dark-mode .search-input::placeholder { color: #6b6760; }
             body.dark-mode .rss-item { border-left-color: #4a6b48; }
-            body.dark-mode .rss-section-header { background: #1e2218; border-bottom-color: #2e2a26; }
+            body.dark-mode .rss-section-header, body.dark-mode .standalone-section-header, body.dark-mode .ai-section-header { background: #1e2218; border-bottom-color: #2e2a26; }
             body.dark-mode .ai-section { background: #221e1a; border-left-color: #e0a060; }
             body.dark-mode .ai-section-title { color: #e0a060; }
-            body.dark-mode .ai-section-badge { background: #c2610a; }
             body.dark-mode .ai-block { background: #2a2520; border-left-color: #2e2a26; }
             body.dark-mode .ai-block-title { color: #e0a060; }
             body.dark-mode .ai-block-content { color: #c8c4bc; }
@@ -1121,7 +1085,6 @@ def render_html_content(
             body.dark-mode .save-dropdown-menu { background: #2a2520; border-color: #3a3530; }
             body.dark-mode .save-dropdown-item { color: #e0dbd2; }
             body.dark-mode .save-dropdown-item:hover { background: #3a3530; color: #e0a060; }
-            body.dark-mode .standalone-section-header { background: #1e2218; border-bottom-color: #2e2a26; }
 
             /* 暗色模式切换按钮 */
             .toggle-dark-btn {
@@ -1152,6 +1115,7 @@ def render_html_content(
                 color: var(--ok); flex-shrink: 0;
                 display: flex; align-items: center; justify-content: center;
                 align-self: flex-start;
+                margin-left: auto;
                 margin-top: 2px;
             }
             .bm-btn svg {
@@ -1175,6 +1139,59 @@ def render_html_content(
                 font-family: var(--font-ui);
             }
             .bm-toast.show { opacity: 1; }
+
+            /* ── 热度标签 ── */
+            .heat-badge {
+                display: inline-flex; align-items: center; gap: 1px;
+                font-size: 10px; font-weight: 700;
+                padding: 1px 5px; border-radius: 2px; flex-shrink: 0;
+            }
+            .heat-1 { background: #f3f4f6; color: #9ca3af; }
+            .heat-2 { background: #fef9c3; color: #ca8a04; }
+            .heat-3 { background: #ffedd5; color: #ea580c; }
+            .heat-4 { background: #fee2e2; color: #dc2626; }
+            .heat-5 { background: #dc2626; color: #fff; }
+            body.dark-mode .heat-1 { background: #2a2824; color: #6b6760; }
+            body.dark-mode .heat-2 { background: #2a2310; color: #ca8a04; }
+            body.dark-mode .heat-3 { background: #2a1e10; color: #e0903a; }
+            body.dark-mode .heat-4 { background: #2a1414; color: #f08080; }
+            body.dark-mode .heat-5 { background: #991b1b; color: #fecaca; }
+
+            /* ── 筛选栏（chips + 搜索框）── */
+            .filter-bar {
+                padding: 10px 20px 8px;
+                border-bottom: 1px solid var(--line);
+                background: var(--bg);
+                display: flex; flex-direction: column; gap: 8px;
+            }
+            .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+            .filter-chip {
+                padding: 3px 10px; border: 1px solid var(--line);
+                border-radius: 12px; background: var(--panel);
+                color: var(--ink-2); font-size: 11px; font-family: var(--font-ui);
+                font-weight: 500; cursor: pointer; transition: all 0.15s;
+                white-space: nowrap; line-height: 1.6;
+            }
+            .filter-chip:hover { border-color: var(--hi); color: var(--hi); }
+            .filter-chip.active { background: var(--hi); border-color: var(--hi); color: #fff; }
+            .filter-input {
+                width: 100%; padding: 6px 12px; border: 1px solid var(--line);
+                background: var(--panel); color: var(--ink);
+                font-size: 12px; font-family: var(--font-ui);
+                outline: none; transition: border-color 0.15s;
+                border-radius: 2px; box-sizing: border-box;
+            }
+            .filter-input:focus { border-color: var(--hi); }
+            .filter-input::placeholder { color: var(--faint); }
+            .word-group.focused > .word-header { border-left: 3px solid var(--hi); padding-left: 17px; }
+            body.dark-mode .filter-bar { background: #221e1a; border-bottom-color: #2e2a26; }
+            body.dark-mode .filter-chip { background: #1e1b17; border-color: #2e2a26; color: #9a9690; }
+            body.dark-mode .filter-chip:hover { border-color: #e0a060; color: #e0a060; }
+            body.dark-mode .filter-chip.active { background: #c2610a; border-color: #c2610a; color: #fff; }
+            body.dark-mode .filter-input { background: #1e1b17; border-color: #2e2a26; color: #e0dbd2; }
+            body.dark-mode .filter-input:focus { border-color: #e0a060; }
+            body.dark-mode .filter-input::placeholder { color: #6b6760; }
+            body.dark-mode .word-group.focused > .word-header { border-left-color: #e0a060; }
         </style>
     </head>
     <body>
@@ -1323,6 +1340,10 @@ def render_html_content(
             </div>
 
             <div class="content">
+                <div class="filter-bar">
+                    <div class="chip-row" id="chip-row"></div>
+                    <input type="text" class="filter-input" id="filter-input" placeholder="搜索关键词，匹配词组排到前面… 如：英国 AI" oninput="handleFilterInput(this.value)">
+                </div>
                 <div class="search-bar">
                     <input type="text" class="search-input" placeholder="搜索新闻标题..." oninput="handleSearch(this.value)">
                 </div>"""
@@ -1369,7 +1390,7 @@ def render_html_content(
             escaped_word = html_escape(stat["word"])
 
             stats_html += f"""
-                <div class="word-group collapsed" data-tab-index="{i - 1}">
+                <div class="word-group collapsed" data-tab-index="{i - 1}" data-word="{escaped_word}">
                     <div class="word-header">
                         <div class="word-info">
                             <div class="word-name">{escaped_word}</div>
@@ -1383,11 +1404,20 @@ def render_html_content(
                 is_new = title_data.get("is_new", False)
                 new_class = "new" if is_new else ""
 
+                # 预计算热度分 1-5 (rank 60% + count 40%)
+                _rnks = title_data.get("ranks", [])
+                _cnt = title_data.get("count", 1)
+                _rth = title_data.get("rank_threshold", 10)
+                _mr = min(_rnks) if _rnks else 99
+                _rs = 5 if _mr <= 3 else 4 if _mr <= _rth else 3 if _mr <= _rth * 2 else 2 if _mr <= _rth * 4 else 1
+                _cs = 5 if _cnt >= 10 else 4 if _cnt >= 5 else 3 if _cnt >= 3 else 2 if _cnt >= 2 else 1
+                _heat = max(1, min(5, round(_rs * 0.6 + _cs * 0.4)))
+
                 stats_html += f"""
                     <div class="news-item {new_class}">
                         <div class="news-number">{j}</div>
                         <div class="news-content">
-                            <div class="news-header">"""
+                            <div class="news-header"><span class="heat-badge heat-{_heat}">⚡{_heat}</span>"""
 
                 # 根据 display_mode 决定显示来源还是关键词
                 if display_mode == "keyword":
@@ -1576,8 +1606,9 @@ def render_html_content(
             return ""
 
         rss_html = f"""
-                <div class="rss-section">
+                <div class="rss-section collapsed">
                     <div class="rss-section-header">
+                        <span class="collapse-icon">▼</span>
                         <div class="rss-section-title">{title}</div>
                         <div class="rss-section-count">{total_count} 条</div>
                     </div>
@@ -1595,9 +1626,9 @@ def render_html_content(
             rss_html += f"""
                     <div class="feed-group collapsed">
                         <div class="feed-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="feed-name">{html_escape(keyword)}</div>
                             <div class="feed-count">{keyword_count} 条</div>
-                            <div class="feed-index"><span class="collapse-icon">▼</span></div>
                         </div>"""
 
             for title_data in titles:
@@ -1704,17 +1735,6 @@ def render_html_content(
         if total_count == 0:
             return ""
 
-        # 收集所有分组信息用于生成 tab
-        all_groups = []
-        for p in platforms:
-            items = p.get("items", [])
-            if items:
-                all_groups.append({"name": p.get("name", p.get("id", "")), "count": len(items)})
-        for f in rss_feeds:
-            items = f.get("items", [])
-            if items:
-                all_groups.append({"name": f.get("name", f.get("id", "")), "count": len(items)})
-
         standalone_html = f"""
                 <div class="standalone-section collapsed">
                     <div class="standalone-section-header">
@@ -1727,7 +1747,6 @@ def render_html_content(
         standalone_html += """
                     <div class="standalone-groups-grid">"""
 
-        group_idx = 0
         # 渲染热榜平台（复用 word-group 结构）
         for platform in platforms:
             platform_name = platform.get("name", platform.get("id", ""))
@@ -1736,7 +1755,7 @@ def render_html_content(
                 continue
 
             standalone_html += f"""
-                    <div class="standalone-group collapsed" data-standalone-tab="{group_idx}">
+                    <div class="standalone-group collapsed">
                         <div class="standalone-header">
                             <span class="collapse-icon">▼</span>
                             <div class="standalone-name">{html_escape(platform_name)}</div>
@@ -1819,7 +1838,6 @@ def render_html_content(
 
             standalone_html += """
                     </div>"""
-            group_idx += 1
 
         # 渲染 RSS 源（复用相同结构）
         for feed in rss_feeds:
@@ -1829,7 +1847,7 @@ def render_html_content(
                 continue
 
             standalone_html += f"""
-                    <div class="standalone-group collapsed" data-standalone-tab="{group_idx}">
+                    <div class="standalone-group collapsed">
                         <div class="standalone-header">
                             <span class="collapse-icon">▼</span>
                             <div class="standalone-name">{html_escape(feed_name)}</div>
@@ -1885,7 +1903,6 @@ def render_html_content(
 
             standalone_html += """
                     </div>"""
-            group_idx += 1
 
         standalone_html += """
                     </div>
@@ -1973,6 +1990,7 @@ def render_html_content(
                 <div class="fab-tooltip">
                     <div class="tip-row"><span>切换宽屏</span><span class="tip-key">W</span></div>
                     <div class="tip-row"><span>暗色模式</span><span class="tip-key">D</span></div>
+                    <div class="tip-row"><span>关注词</span><span class="tip-key">F</span></div>
                     <div class="tip-row"><span>搜索</span><span class="tip-key">/</span></div>
                     <div class="tip-row"><span>上一个 Tab</span><span class="tip-key">←</span></div>
                     <div class="tip-row"><span>下一个 Tab</span><span class="tip-key">→</span></div>
@@ -2175,6 +2193,12 @@ def render_html_content(
                         if (group) group.classList.toggle('collapsed');
                     });
                 });
+                document.querySelectorAll('.rss-section-header').forEach(function(header) {
+                    header.addEventListener('click', function() {
+                        var section = header.closest('.rss-section');
+                        if (section) section.classList.toggle('collapsed');
+                    });
+                });
                 document.querySelectorAll('.feed-header').forEach(function(header) {
                     header.addEventListener('click', function() {
                         var group = header.closest('.feed-group');
@@ -2209,7 +2233,7 @@ def render_html_content(
             }
 
             function initCollapseVisibility() {
-                var headers = document.querySelectorAll('.word-header, .feed-header, .ai-block-header, .ai-section-header, .standalone-section-header, .standalone-header');
+                var headers = document.querySelectorAll('.word-header, .rss-section-header, .feed-header, .ai-block-header, .ai-section-header, .standalone-section-header, .standalone-header');
                 headers.forEach(function(h) {
                     h.classList.add('collapsible');
                 });
@@ -2801,6 +2825,67 @@ def render_html_content(
                 URL.revokeObjectURL(link.href);
             }
 
+            // ── 筛选栏（chips + 搜索框）──
+
+            function initFilterBar() {
+                var groups = Array.from(document.querySelectorAll('.word-group[data-word]'));
+                var chipRow = document.getElementById('chip-row');
+                if (!chipRow || !groups.length) return;
+                groups.forEach(function(g) {
+                    var word = g.dataset.word;
+                    var chip = document.createElement('button');
+                    chip.className = 'filter-chip';
+                    chip.textContent = word;
+                    chip.dataset.word = word;
+                    chip.addEventListener('click', function() {
+                        chip.classList.toggle('active');
+                        var activeWords = Array.from(chipRow.querySelectorAll('.filter-chip.active')).map(function(c) { return c.dataset.word; });
+                        var combined = activeWords.join(' ');
+                        var input = document.getElementById('filter-input');
+                        if (input) input.value = combined;
+                        _applyFilter(combined);
+                        try {
+                            if (combined) localStorage.setItem('trendradar-filter', combined);
+                            else localStorage.removeItem('trendradar-filter');
+                        } catch(e) {}
+                    });
+                    chipRow.appendChild(chip);
+                });
+            }
+
+            function handleFilterInput(value) {
+                var lv = value.trim().toLowerCase();
+                document.querySelectorAll('.filter-chip').forEach(function(c) {
+                    var cw = c.dataset.word.toLowerCase();
+                    c.classList.toggle('active', lv.length > 0 && (cw.indexOf(lv) !== -1 || lv.indexOf(cw) !== -1));
+                });
+                _applyFilter(value);
+                try {
+                    if (value.trim()) localStorage.setItem('trendradar-filter', value);
+                    else localStorage.removeItem('trendradar-filter');
+                } catch(e) {}
+            }
+
+            function _applyFilter(value) {
+                var section = document.querySelector('.hotlist-section');
+                if (!section) return;
+                var groups = Array.from(section.querySelectorAll('.word-group'));
+                if (!groups.length) return;
+                groups.forEach(function(g) { g.classList.remove('focused'); });
+                var lv = value.trim().toLowerCase();
+                if (!lv) return;
+                var kws = lv.split(/[\s,，、]+/).filter(Boolean);
+                var matched = [], unmatched = [];
+                groups.forEach(function(g) {
+                    var word = (g.dataset.word || '').toLowerCase();
+                    var hit = kws.some(function(kw) { return word.indexOf(kw) !== -1; });
+                    if (hit) { g.classList.add('focused'); matched.push(g); }
+                    else { unmatched.push(g); }
+                });
+                var parent = groups[0].parentNode;
+                matched.concat(unmatched).forEach(function(g) { parent.appendChild(g); });
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 window.scrollTo(0, 0);
 
@@ -2831,6 +2916,17 @@ def render_html_content(
                 initBackToTop();
                 initCollapse();
 
+                // 初始化筛选栏并恢复上次状态
+                initFilterBar();
+                (function() {
+                    var saved = null;
+                    try { saved = localStorage.getItem('trendradar-filter'); } catch(e) {}
+                    if (saved) {
+                        var fi = document.getElementById('filter-input');
+                        if (fi) { fi.value = saved; handleFilterInput(saved); }
+                    }
+                })();
+
                 // 键盘快捷键
                 document.addEventListener('keydown', function(e) {
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -2849,6 +2945,7 @@ def render_html_content(
                         case 'w': case 'W': toggleWideMode(); break;
                         case 'd': case 'D': toggleDarkMode(); break;
                         case '/': e.preventDefault(); var si = document.querySelector('.search-input'); if (si) si.focus(); break;
+                        case 'f': case 'F': e.preventDefault(); var fi3 = document.getElementById('filter-input'); if (fi3) fi3.focus(); break;
                     }
                 });
 
