@@ -291,20 +291,34 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
     if not result.success:
         if result.skipped:
             return f"""
-                <div class="ai-section">
-                    <div class="ai-info">ℹ️ {_escape_html(str(result.error))}</div>
+                <div class="ai-section collapsed">
+                    <div class="ai-section-header">
+                        <span class="collapse-icon">▼</span>
+                        <div class="ai-section-title">AI 热点分析</div>
+                        <span class="ai-section-badge">AI</span>
+                    </div>
+                    <div class="ai-blocks-grid">
+                        <div class="ai-info">ℹ️ {_escape_html(str(result.error))}</div>
+                    </div>
                 </div>"""
         error_msg = result.error or "未知错误"
         return f"""
-                <div class="ai-section">
-                    <div class="ai-warning">AI 分析失败: {_escape_html(str(error_msg))}</div>
+                <div class="ai-section collapsed">
+                    <div class="ai-section-header">
+                        <span class="collapse-icon">▼</span>
+                        <div class="ai-section-title">AI 热点分析</div>
+                        <span class="ai-section-badge">AI</span>
+                    </div>
+                    <div class="ai-blocks-grid">
+                        <div class="ai-warning">AI 分析失败: {_escape_html(str(error_msg))}</div>
+                    </div>
                 </div>"""
 
     ai_html = """
                 <div class="ai-section collapsed">
                     <div class="ai-section-header">
                         <span class="collapse-icon">▼</span>
-                        <div class="ai-section-title">✨ AI 热点分析</div>
+                        <div class="ai-section-title">AI 热点分析</div>
                         <span class="ai-section-badge">AI</span>
                     </div>
                     <div class="ai-blocks-grid">"""
@@ -315,8 +329,9 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
         ai_html += f"""
                     <div class="ai-block collapsed">
                         <div class="ai-block-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="ai-block-title">核心热点态势</div>
-                            <div class="ai-block-index"><span class="collapse-icon">▼</span></div>
+                            <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{content_html}</div>
                     </div>"""
@@ -327,8 +342,9 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
         ai_html += f"""
                     <div class="ai-block collapsed">
                         <div class="ai-block-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="ai-block-title">舆论风向争议</div>
-                            <div class="ai-block-index"><span class="collapse-icon">▼</span></div>
+                            <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{content_html}</div>
                     </div>"""
@@ -339,8 +355,9 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
         ai_html += f"""
                     <div class="ai-block collapsed">
                         <div class="ai-block-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="ai-block-title">异动与弱信号</div>
-                            <div class="ai-block-index"><span class="collapse-icon">▼</span></div>
+                            <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{content_html}</div>
                     </div>"""
@@ -351,8 +368,9 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
         ai_html += f"""
                     <div class="ai-block collapsed">
                         <div class="ai-block-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="ai-block-title">RSS 深度洞察</div>
-                            <div class="ai-block-index"><span class="collapse-icon">▼</span></div>
+                            <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{content_html}</div>
                     </div>"""
@@ -363,8 +381,9 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
         ai_html += f"""
                     <div class="ai-block collapsed">
                         <div class="ai-block-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="ai-block-title">研判策略建议</div>
-                            <div class="ai-block-index"><span class="collapse-icon">▼</span></div>
+                            <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{content_html}</div>
                     </div>"""
@@ -376,8 +395,9 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
             ai_html += f"""
                     <div class="ai-block collapsed">
                         <div class="ai-block-header">
+                            <span class="collapse-icon">▼</span>
                             <div class="ai-block-title">独立源点速览</div>
-                            <div class="ai-block-index"><span class="collapse-icon">▼</span></div>
+                            <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{summaries_html}</div>
                     </div>"""

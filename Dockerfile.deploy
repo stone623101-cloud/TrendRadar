@@ -4,9 +4,9 @@ COPY config/ /app/config/
 COPY upload_html.py /app/upload_html.py
 COPY entrypoint-job.sh /entrypoint-job.sh
 COPY trendradar/report/html.py /app/trendradar/report/html.py
+COPY trendradar/ai/formatter.py /app/trendradar/ai/formatter.py
 COPY trendradar/crawler/rss/parser.py /app/trendradar/crawler/rss/parser.py
 RUN chmod +x /entrypoint-job.sh && \
     uv pip install google-cloud-storage --python /app/.venv/bin/python
 
 ENTRYPOINT ["/entrypoint-job.sh"]
-

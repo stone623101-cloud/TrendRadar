@@ -116,9 +116,11 @@ class DataFetcher:
 
         retries = 0
         while retries <= max_retries:
+            # 首次尝试获取最新数据，重试时回退到获取缓存数据（去掉 &latest）
+            current_url = url if retries == 0 else f"{self.api_url}?id={id_value}"
             try:
                 response = requests.get(
-                    url,
+                    current_url,
                     proxies=proxies,
                     headers=self.DEFAULT_HEADERS,
                     timeout=10,
@@ -142,7 +144,8 @@ class DataFetcher:
                     base_wait = random.uniform(min_retry_wait, max_retry_wait)
                     additional_wait = (retries - 1) * random.uniform(1, 2)
                     wait_time = base_wait + additional_wait
-                    print(f"请求 {id_value} 失败: {e}. {wait_time:.2f}秒后重试...")
+                    fallback_msg = "，并将尝试回退到获取缓存数据" if retries == 1 else ""
+                    print(f"请求 {id_value} 失败: {e}。{wait_time:.2f}秒后进行第 {retries} 次重试{fallback_msg}...")
                     time.sleep(wait_time)
                 else:
                     print(f"请求 {id_value} 失败: {e}")

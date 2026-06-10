@@ -262,6 +262,10 @@
 #                      时尚行业 & 英国院校
 # ═══════════════════════════════════════════════════════════════
 
+[CSVPA]
+/\bCSVPA\b|Cambridge School of Visual|csvpa\.com/ => CSVPA
+/CSVPA.*[Ll]ondon|[Ll]ondon.*CSVPA/ => CSVPA London
+
 [UAL 院校]
 /Central Saint Martins|CSM graduate|CSM fashion/ => Central Saint Martins
 /London College of Fashion|\bLCF\b/ => London College of Fashion
@@ -285,6 +289,9 @@
 # ═══════════════════════════════════════════════════════════════
 #                         电竞与体育
 # ═══════════════════════════════════════════════════════════════
+
+[Hooky]
+/\bHooky\b|Miriam Bonastre|Dani.*Dorian|Dorian.*Dani/ => Hooky
 
 [Roblox]
 /\bRoblox\b|\bRoblox Studio\b/ => Roblox

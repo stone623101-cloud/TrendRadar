@@ -213,6 +213,16 @@ rss:
       url: "https://www.reddit.com/r/RobloxDev/.rss"
       max_age_days: 2
 
+    - id: "reddit-hooky"
+      name: "Reddit r/Hooky"
+      url: "https://www.reddit.com/r/Hooky/.rss"
+      max_age_days: 7
+
+    - id: "csvpa"
+      name: "CSVPA"
+      url: "https://www.csvpa.com/feed/"
+      max_age_days: 30
+
     - id: "roblox-devforum-release"
       name: "Roblox Studio Release Notes"
       url: "https://devforum.roblox.com/c/updates/release-notes.rss"
@@ -264,6 +274,11 @@ rss:
       name: "TradingView Top Stories (CN)"
       url: "https://cn.tradingview.com/news/"
       max_age_days: 1
+
+    - id: "buffett-indicator"
+      name: "巴菲特指标 (Current Market Valuation)"
+      url: "https://www.currentmarketvaluation.com/models/buffett-indicator.php"
+      max_age_days: 0
 
     # 自定义源示例
     # - id: "custom-feed"
@@ -370,7 +385,7 @@ display:
   # 推送展示由 regions.standalone 控制，AI 分析由 ai_analysis.include_standalone 控制
   standalone:
     platforms: ["zhihu", "wallstreetcn-hot"]     # 热榜平台 ID 列表（如 ["zhihu", "weibo"]）
-    rss_feeds: ["tradingview-top-stories-en", "tradingview-top-stories-cn", "bbc-news", "bbc-london", "bbc-cambridgeshire"]                                # RSS 源 ID 列表（如 ["hacker-news"]）
+    rss_feeds: ["tradingview-top-stories-en", "tradingview-top-stories-cn", "bbc-news", "bbc-london", "bbc-cambridgeshire", "reddit-hooky", "csvpa"]                                # RSS 源 ID 列表（如 ["hacker-news"]）
     max_items: 20                                # 每个源最多展示条数（0=不限制）
 
 

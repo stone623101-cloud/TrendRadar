@@ -62,6 +62,10 @@ class RSSParser:
         if feed_url and "tradingview.com/news" in feed_url:
             return self._parse_tradingview(content, feed_url)
 
+        # 拦截并解析 Current Market Valuation 的巴菲特指标页面
+        if feed_url and "currentmarketvaluation.com/models/buffett-indicator.php" in feed_url:
+            return self._parse_currentmarketvaluation_buffett(content, feed_url)
+
         # 先尝试检测 JSON Feed
         if self._is_json_feed(content):
             return self._parse_json_feed(content, feed_url)
@@ -472,3 +476,80 @@ class RSSParser:
             )
 
         return parsed_items
+
+    def _parse_currentmarketvaluation_buffett(self, content: str, feed_url: str) -> List[ParsedRSSItem]:
+        """解析 Current Market Valuation 的巴菲特指标页面"""
+        # 提取更新日期
+        date_match = re.search(r'Updated on\s*</span>\s*<span class="card-author">\s*([^<]+)\s*</span>', content, re.IGNORECASE)
+        if not date_match:
+            date_match = re.search(r'As of\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})', content, re.IGNORECASE)
+        
+        date_str = date_match.group(1).strip() if date_match else ""
+        
+        # 提取当前数值
+        val_match = re.search(r'Buffett Indicator\s*</span>\s*=\s*.*?(\d+%)', content, re.DOTALL | re.IGNORECASE)
+        if not val_match:
+            val_match = re.search(r'calculate the Buffett Indicator as\s+(\d+%)', content, re.IGNORECASE)
+        if not val_match:
+            val_match = re.search(r'fw-bold[^>]*>(\d+%)', content, re.IGNORECASE)
+            
+        val_str = val_match.group(1).strip() if val_match else "Unknown"
+        
+        # 提取状态（如 Strongly Overvalued）
+        status_match = re.search(r'class="badge header-status-badge[^>]*>([^<]+)</span>', content, re.IGNORECASE)
+        if not status_match:
+            status_match = re.search(r'suggesting that the US stock market is\s*</span>\s*<span[^>]*>([^<]+)</span>', content, re.IGNORECASE)
+        
+        status_str = status_match.group(1).strip() if status_match else "Unknown"
+        
+        # 提取总市值和 GDP
+        mkt_val_match = re.search(r'Total US Stock Market Value\s*=\s*(\$[0-9.]+[TMB])', content, re.IGNORECASE)
+        gdp_match = re.search(r'Annualized GDP\s*=\s*(\$[0-9.]+[TMB])', content, re.IGNORECASE)
+        
+        mkt_val = mkt_val_match.group(1).strip() if mkt_val_match else ""
+        gdp_val = gdp_match.group(1).strip() if gdp_match else ""
+        
+        # 格式化发布时间
+        published_at = None
+        if date_str:
+            try:
+                clean_date = re.sub(r'\s+', ' ', date_str)
+                dt = datetime.strptime(clean_date, "%B %d, %Y")
+                published_at = dt.isoformat()
+            except Exception:
+                pass
+                
+        # 构建标题和摘要
+        title = f"巴菲特指标 (Buffett Indicator): {val_str} ({status_str})"
+        if date_str:
+            title += f" - {date_str}"
+            
+        summary_parts = []
+        summary_parts.append(f"最新更新时间: {date_str or '未知'}")
+        summary_parts.append(f"巴菲特指标数值: {val_str}")
+        summary_parts.append(f"市场估值状态: {status_str}")
+        if mkt_val:
+            summary_parts.append(f"美股总市值: {mkt_val}")
+        if gdp_val:
+            summary_parts.append(f"美国 annualized GDP: {gdp_val}")
+            
+        desc_match = re.search(r'The current ratio of \d+%.*?above the historical trend line.*?relative to GDP\.', content, re.DOTALL)
+        if desc_match:
+            summary_parts.append(self._clean_text(desc_match.group(0)))
+            
+        summary = "\n".join(summary_parts)
+        
+        guid_seed = date_str or val_str
+        guid_clean = re.sub(r'[^a-zA-Z0-9]', '', guid_seed).lower()
+        guid = f"currentmarketvaluation-buffett-{guid_clean}"
+        
+        return [
+            ParsedRSSItem(
+                title=title,
+                url=feed_url,
+                published_at=published_at,
+                summary=summary,
+                author="Current Market Valuation",
+                guid=guid
+            )
+        ]
