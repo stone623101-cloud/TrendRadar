@@ -1372,18 +1372,6 @@ def render_html_content(
                     <input type="text" class="search-input" placeholder="搜索新闻标题..." oninput="handleSearch(this.value)">
                 </div>"""
 
-    # 处理失败ID错误信息
-    if report_data["failed_ids"]:
-        html += """
-                <div class="error-section">
-                    <div class="error-title">⚠️ 请求失败的平台</div>
-                    <ul class="error-list">"""
-        for id_value in report_data["failed_ids"]:
-            html += f'<li class="error-item">{html_escape(id_value)}</li>'
-        html += """
-                    </ul>
-                </div>"""
-
     # 生成热点词汇统计部分的HTML
     stats_html = ""
     tab_bar_html = ""
@@ -1979,6 +1967,21 @@ def render_html_content(
                 content = add_section_divider(content)
             html += content
             has_previous_content = True
+
+    # 处理失败ID错误信息
+    if report_data["failed_ids"]:
+        error_html = """
+                <div class="error-section">
+                    <div class="error-title">⚠️ 请求失败的平台</div>
+                    <ul class="error-list">"""
+        for id_value in report_data["failed_ids"]:
+            error_html += f'<li class="error-item">{html_escape(id_value)}</li>'
+        error_html += """
+                    </ul>
+                </div>"""
+        if has_previous_content:
+            error_html = add_section_divider(error_html)
+        html += error_html
 
     html += """
             </div>
