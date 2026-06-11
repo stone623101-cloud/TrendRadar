@@ -872,6 +872,48 @@ def render_html_content(
                 padding: 12px 20px 14px;
             }
 
+            .ai-summary-strip {
+                margin: 12px 20px 14px;
+                padding: 12px 14px;
+                background: #fff7ed;
+                border: 1px solid #fed7aa;
+                border-left: 3px solid var(--hi);
+                border-radius: 2px;
+            }
+
+            .ai-summary-kicker {
+                color: var(--hi);
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+
+            .ai-summary-lines {
+                display: grid;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+
+            .ai-summary-line {
+                font-family: var(--font-title);
+                font-size: 14px;
+                line-height: 1.55;
+                color: var(--ink-2);
+            }
+
+            .ai-summary-action {
+                color: var(--hi);
+                font-size: 12px;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .ai-summary-action:hover {
+                text-decoration: underline;
+            }
+
             .ai-error,
             .ai-warning,
             .ai-info {
@@ -1073,6 +1115,9 @@ def render_html_content(
             body.dark-mode .ai-block { background: #2a2520; border-left-color: #2e2a26; }
             body.dark-mode .ai-block-title { color: #e0a060; }
             body.dark-mode .ai-block-content { color: #c8c4bc; }
+            body.dark-mode .ai-summary-strip { background: #2a2010; border-color: #6b4810; border-left-color: #e0a060; }
+            body.dark-mode .ai-summary-kicker, body.dark-mode .ai-summary-action { color: #e0a060; }
+            body.dark-mode .ai-summary-line { color: #c8c4bc; }
             body.dark-mode .ai-warning { background: #2a2010; border-color: #6b4810; color: #d4a060; }
             body.dark-mode .ai-error { background: #2a1414; border-color: #6b1818; color: #f08080; }
             body.dark-mode .ai-info { background: #141e2a; border-color: #1a3050; color: #80a8d0; }
@@ -1216,6 +1261,249 @@ def render_html_content(
             body.dark-mode .subfilter-chip { background: #1e1b17; border-color: #2e2a26; color: #9a9690; }
             body.dark-mode .subfilter-chip:hover { border-color: #7aab78; color: #7aab78; }
             body.dark-mode .subfilter-chip.active { background: #4a6b48; border-color: #4a6b48; color: #fff; }
+
+            @media (max-width: 640px) {
+                body {
+                    padding: 0;
+                    font-size: 14px;
+                    background: var(--bg);
+                }
+
+                .container {
+                    width: 100%;
+                    max-width: none;
+                    border: none;
+                }
+
+                .header {
+                    padding: 16px 14px 14px;
+                    min-height: 0;
+                }
+
+                .header-watermark {
+                    display: none;
+                }
+
+                .save-buttons {
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    gap: 5px;
+                    width: auto;
+                    margin: 0;
+                    justify-content: flex-end;
+                }
+
+                .toggle-wide-btn,
+                .toggle-dark-btn,
+                .save-btn,
+                .save-dropdown-trigger {
+                    min-height: 30px;
+                    padding: 7px 9px;
+                    font-size: 12px;
+                }
+
+                .save-btn {
+                    width: auto;
+                    max-width: 64px;
+                }
+
+                .save-dropdown-menu {
+                    right: 0;
+                }
+
+                .header-title {
+                    font-size: 23px;
+                    line-height: 1.18;
+                    padding-right: 132px;
+                    margin-bottom: 14px;
+                }
+
+                .header-info {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 8px;
+                    padding-top: 12px;
+                    font-size: 11px;
+                }
+
+                .info-label {
+                    font-size: 9px;
+                    margin-bottom: 2px;
+                }
+
+                .info-value {
+                    font-size: 12px;
+                }
+
+                .filter-bar {
+                    position: sticky;
+                    top: 0;
+                    z-index: 30;
+                    padding: 9px 12px 10px;
+                    gap: 8px;
+                    background: rgba(250, 249, 247, 0.97);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                }
+
+                .chip-row,
+                .subfilter-row {
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    scrollbar-width: none;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .chip-row::-webkit-scrollbar,
+                .subfilter-row::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .filter-chip,
+                .subfilter-chip {
+                    flex: 0 0 auto;
+                    min-height: 30px;
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 5px 12px;
+                    border-radius: 999px;
+                    font-size: 12px;
+                }
+
+                .filter-input {
+                    min-height: 38px;
+                    padding: 9px 13px;
+                    border-radius: 999px;
+                    font-size: 13px;
+                    background: var(--bg);
+                }
+
+                .word-header,
+                .rss-section-header,
+                .standalone-section-header,
+                .ai-section-header {
+                    padding: 11px 12px 9px;
+                }
+
+                .word-name,
+                .rss-section-title,
+                .standalone-section-title,
+                .ai-section-title {
+                    font-size: 12px;
+                }
+
+                .word-index,
+                .word-count,
+                .rss-section-count,
+                .standalone-section-count,
+                .ai-section-badge {
+                    font-size: 11px;
+                }
+
+                .news-item {
+                    padding: 12px;
+                    gap: 9px;
+                }
+
+                .news-content {
+                    padding-right: 0;
+                }
+
+                .news-item.new .news-content {
+                    padding-right: 42px;
+                }
+
+                .news-item.new::after {
+                    top: 12px;
+                    right: 12px;
+                }
+
+                .news-number {
+                    width: 24px;
+                    height: 24px;
+                    min-width: 24px;
+                    font-size: 11px;
+                    margin-top: 0;
+                }
+
+                .news-header {
+                    gap: 5px;
+                    margin-bottom: 5px;
+                }
+
+                .news-title,
+                .rss-title {
+                    font-size: 15px;
+                    line-height: 1.45;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .news-link,
+                .rss-link {
+                    overflow-wrap: anywhere;
+                }
+
+                .bm-btn {
+                    opacity: 0.72;
+                    min-width: 30px;
+                    width: 30px;
+                    height: 30px;
+                    margin-top: -4px;
+                    padding: 6px;
+                }
+
+                .rss-section,
+                .standalone-section,
+                .ai-section {
+                    border-top-width: 1px;
+                }
+
+                .rss-item {
+                    padding: 11px 12px;
+                }
+
+                .feed-header,
+                .standalone-header,
+                .ai-block-header {
+                    padding: 10px 12px 9px;
+                }
+
+                .ai-summary-strip,
+                .ai-error,
+                .ai-warning,
+                .ai-info {
+                    margin: 10px 12px 12px;
+                    padding: 12px;
+                }
+
+                .ai-summary-line,
+                .ai-block-content {
+                    font-size: 14px;
+                    line-height: 1.58;
+                }
+
+                .ai-block-content {
+                    padding: 12px;
+                }
+
+                .new-section {
+                    padding: 14px 12px;
+                }
+
+                .new-item {
+                    align-items: flex-start;
+                }
+
+                .fab-bar {
+                    right: 14px;
+                    bottom: 14px;
+                }
+
+                body.dark-mode .filter-bar {
+                    background: rgba(34, 30, 26, 0.96);
+                }
+            }
         </style>
     </head>
     <body>
@@ -1372,6 +1660,10 @@ def render_html_content(
                     <input type="text" class="search-input" placeholder="搜索新闻标题..." oninput="handleSearch(this.value)">
                 </div>"""
 
+    # 生成 AI 分析 HTML。优先嵌入 hotlist 之后，让移动端更早看到摘要。
+    ai_html = render_ai_analysis_html_rich(ai_analysis) if ai_analysis else ""
+    ai_embedded_in_hotlist = False
+
     # 生成热点词汇统计部分的HTML
     stats_html = ""
     tab_bar_html = ""
@@ -1504,6 +1796,10 @@ def render_html_content(
 
             stats_html += """
                 </div>"""
+
+            if i == 1 and ai_html:
+                stats_html += ai_html
+                ai_embedded_in_hotlist = True
 
     # 给热榜统计添加外层包装
     if stats_html:
@@ -1923,16 +2219,13 @@ def render_html_content(
     # 生成独立展示区 HTML
     standalone_html = render_standalone_html(standalone_data)
 
-    # 生成 AI 分析 HTML
-    ai_html = render_ai_analysis_html_rich(ai_analysis) if ai_analysis else ""
-
     # 准备各区域内容映射
     region_contents = {
         "hotlist": stats_html,
         "rss": rss_stats_html,
         "new_items": (new_titles_html, rss_new_html),  # 元组，分别处理
         "standalone": standalone_html,
-        "ai_analysis": ai_html,
+        "ai_analysis": "" if ai_embedded_in_hotlist else ai_html,
     }
 
     def add_section_divider(content: str) -> str:

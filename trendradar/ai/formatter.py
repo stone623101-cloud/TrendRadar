@@ -282,6 +282,25 @@ def get_ai_analysis_renderer(channel: str):
     return renderers.get(channel, render_ai_analysis_markdown)
 
 
+def _build_ai_summary_lines(result: AIAnalysisResult, max_lines: int = 3) -> list:
+    """从 AI 结果中提取适合首屏展示的摘要行。"""
+    candidates = [
+        result.core_trends,
+        result.signals,
+        result.outlook_strategy,
+        result.rss_insights,
+        result.sentiment_controversy,
+    ]
+    for text in candidates:
+        if not text:
+            continue
+        formatted = _format_list_content(text)
+        lines = [line.strip() for line in formatted.splitlines() if line.strip()]
+        if lines:
+            return lines[:max_lines]
+    return []
+
+
 def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
     """渲染为丰富样式的 HTML 格式（HTML 报告用）"""
     if not result:
@@ -291,7 +310,7 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
     if not result.success:
         if result.skipped:
             return f"""
-                <div class="ai-section collapsed">
+                <div class="ai-section ai-section-status">
                     <div class="ai-section-header">
                         <span class="collapse-icon">▼</span>
                         <div class="ai-section-title">AI 热点分析</div>
@@ -303,7 +322,7 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
                 </div>"""
         error_msg = result.error or "未知错误"
         return f"""
-                <div class="ai-section collapsed">
+                <div class="ai-section ai-section-status">
                     <div class="ai-section-header">
                         <span class="collapse-icon">▼</span>
                         <div class="ai-section-title">AI 热点分析</div>
@@ -314,93 +333,57 @@ def render_ai_analysis_html_rich(result: AIAnalysisResult) -> str:
                     </div>
                 </div>"""
 
-    ai_html = """
-                <div class="ai-section collapsed">
+    summary_lines = _build_ai_summary_lines(result)
+    if not summary_lines:
+        summary_lines = ["AI 分析已生成，展开下方模块查看完整内容。"]
+    summary_html = "".join(
+        f"<div class=\"ai-summary-line\">{_escape_html(line)}</div>"
+        for line in summary_lines
+    )
+
+    ai_html = f"""
+                <div class="ai-section">
                     <div class="ai-section-header">
                         <span class="collapse-icon">▼</span>
                         <div class="ai-section-title">AI 热点分析</div>
                         <span class="ai-section-badge">AI</span>
                     </div>
-                    <div class="ai-blocks-grid">"""
+                    <div class="ai-summary-strip">
+                        <div class="ai-summary-kicker">AI 今日摘要</div>
+                        <div class="ai-summary-lines">{summary_html}</div>
+                        <a class="ai-summary-action" href="#ai-full-analysis">查看完整分析</a>
+                    </div>
+                    <div class="ai-blocks-grid" id="ai-full-analysis">"""
 
-    if result.core_trends:
-        content = _format_list_content(result.core_trends)
+    first_block = True
+
+    def add_block(title: str, text: str):
+        nonlocal ai_html, first_block
+        if not text:
+            return
+        content = _format_list_content(text)
         content_html = _escape_html(content).replace("\n", "<br>")
+        collapsed_class = "" if first_block else " collapsed"
+        first_block = False
         ai_html += f"""
-                    <div class="ai-block collapsed">
+                    <div class="ai-block{collapsed_class}">
                         <div class="ai-block-header">
                             <span class="collapse-icon">▼</span>
-                            <div class="ai-block-title">核心热点态势</div>
+                            <div class="ai-block-title">{title}</div>
                             <div class="ai-block-count">AI</div>
                         </div>
                         <div class="ai-block-content">{content_html}</div>
                     </div>"""
 
-    if result.sentiment_controversy:
-        content = _format_list_content(result.sentiment_controversy)
-        content_html = _escape_html(content).replace("\n", "<br>")
-        ai_html += f"""
-                    <div class="ai-block collapsed">
-                        <div class="ai-block-header">
-                            <span class="collapse-icon">▼</span>
-                            <div class="ai-block-title">舆论风向争议</div>
-                            <div class="ai-block-count">AI</div>
-                        </div>
-                        <div class="ai-block-content">{content_html}</div>
-                    </div>"""
-
-    if result.signals:
-        content = _format_list_content(result.signals)
-        content_html = _escape_html(content).replace("\n", "<br>")
-        ai_html += f"""
-                    <div class="ai-block collapsed">
-                        <div class="ai-block-header">
-                            <span class="collapse-icon">▼</span>
-                            <div class="ai-block-title">异动与弱信号</div>
-                            <div class="ai-block-count">AI</div>
-                        </div>
-                        <div class="ai-block-content">{content_html}</div>
-                    </div>"""
-
-    if result.rss_insights:
-        content = _format_list_content(result.rss_insights)
-        content_html = _escape_html(content).replace("\n", "<br>")
-        ai_html += f"""
-                    <div class="ai-block collapsed">
-                        <div class="ai-block-header">
-                            <span class="collapse-icon">▼</span>
-                            <div class="ai-block-title">RSS 深度洞察</div>
-                            <div class="ai-block-count">AI</div>
-                        </div>
-                        <div class="ai-block-content">{content_html}</div>
-                    </div>"""
-
-    if result.outlook_strategy:
-        content = _format_list_content(result.outlook_strategy)
-        content_html = _escape_html(content).replace("\n", "<br>")
-        ai_html += f"""
-                    <div class="ai-block collapsed">
-                        <div class="ai-block-header">
-                            <span class="collapse-icon">▼</span>
-                            <div class="ai-block-title">研判策略建议</div>
-                            <div class="ai-block-count">AI</div>
-                        </div>
-                        <div class="ai-block-content">{content_html}</div>
-                    </div>"""
+    add_block("核心热点态势", result.core_trends)
+    add_block("舆论风向争议", result.sentiment_controversy)
+    add_block("异动与弱信号", result.signals)
+    add_block("RSS 深度洞察", result.rss_insights)
+    add_block("研判策略建议", result.outlook_strategy)
 
     if result.standalone_summaries:
         summaries_text = _format_standalone_summaries(result.standalone_summaries)
-        if summaries_text:
-            summaries_html = _escape_html(summaries_text).replace("\n", "<br>")
-            ai_html += f"""
-                    <div class="ai-block collapsed">
-                        <div class="ai-block-header">
-                            <span class="collapse-icon">▼</span>
-                            <div class="ai-block-title">独立源点速览</div>
-                            <div class="ai-block-count">AI</div>
-                        </div>
-                        <div class="ai-block-content">{summaries_html}</div>
-                    </div>"""
+        add_block("独立源点速览", summaries_text)
 
     ai_html += """
                     </div>
