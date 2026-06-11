@@ -15,6 +15,27 @@ from .config import parse_multi_account_config, validate_paired_configs
 from trendradar.utils.time import DEFAULT_TIMEZONE
 
 
+def _normalize_standalone_sources(raw_sources, default_category: str = "其他") -> list:
+    """归一化独立展示源配置，兼容旧字符串数组与新 dict 数组。"""
+    normalized = []
+    for source in raw_sources or []:
+        if isinstance(source, str):
+            source_id = source.strip()
+            if source_id:
+                normalized.append({"id": source_id, "category": default_category})
+            continue
+        if isinstance(source, dict):
+            source_id = str(source.get("id", "")).strip()
+            if source_id:
+                normalized.append(
+                    {
+                        "id": source_id,
+                        "category": str(source.get("category") or default_category),
+                    }
+                )
+    return normalized
+
+
 def _get_env_bool(key: str) -> Optional[bool]:
     """从环境变量获取布尔值，如果未设置返回 None"""
     value = os.environ.get(key, "").strip().lower()
@@ -252,8 +273,8 @@ def _load_display_config(config_data: Dict) -> Dict:
         },
         # 独立展示区配置
         "STANDALONE": {
-            "PLATFORMS": standalone.get("platforms", []),
-            "RSS_FEEDS": standalone.get("rss_feeds", []),
+            "PLATFORMS": _normalize_standalone_sources(standalone.get("platforms", [])),
+            "RSS_FEEDS": _normalize_standalone_sources(standalone.get("rss_feeds", [])),
             "MAX_ITEMS": standalone.get("max_items", 20),
         },
     }

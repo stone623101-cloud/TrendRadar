@@ -9,7 +9,7 @@
 模块结构：
 - helpers: 报告辅助函数（清理、转义、格式化）
 - formatter: 平台标题格式化
-- html: HTML 报告渲染
+- page: HTML 报告渲染
 - generator: 报告生成器
 """
 
@@ -19,7 +19,7 @@ from trendradar.report.helpers import (
     format_rank_display,
 )
 from trendradar.report.formatter import format_title_for_platform
-from trendradar.report.html import render_html_content
+from trendradar.report.page import render_html_content
 from trendradar.report.generator import (
     prepare_report_data,
     generate_html_report,

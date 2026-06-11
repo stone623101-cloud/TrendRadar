@@ -384,8 +384,26 @@ display:
   # 独立展示区：将指定平台/RSS 完整展示，不受关键词过滤
   # 推送展示由 regions.standalone 控制，AI 分析由 ai_analysis.include_standalone 控制
   standalone:
-    platforms: ["zhihu", "wallstreetcn-hot"]     # 热榜平台 ID 列表（如 ["zhihu", "weibo"]）
-    rss_feeds: ["tradingview-top-stories-en", "tradingview-top-stories-cn", "bbc-news", "bbc-london", "bbc-cambridgeshire", "reddit-hooky", "csvpa"]                                # RSS 源 ID 列表（如 ["hacker-news"]）
+    platforms:
+      - id: "zhihu"
+        category: "其他"
+      - id: "wallstreetcn-hot"
+        category: "其他"
+    rss_feeds:
+      - id: "tradingview-top-stories-en"
+        category: "其他"
+      - id: "tradingview-top-stories-cn"
+        category: "其他"
+      - id: "bbc-news"
+        category: "国际局势"
+      - id: "bbc-london"
+        category: "国际局势"
+      - id: "bbc-cambridgeshire"
+        category: "国际局势"
+      - id: "reddit-hooky"
+        category: "电竞游戏"
+      - id: "csvpa"
+        category: "时尚教育"
     max_items: 20                                # 每个源最多展示条数（0=不限制）
 
 

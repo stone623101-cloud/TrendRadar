@@ -11,6 +11,7 @@
 - 正则表达式（/pattern/ 语法）
 - 显示名称（=> 别名 语法）
 - 组别名（[组别名] 语法，作为词组第一行）
+- 主题分类（[[分类名]] 语法，作用到后续词组）
 """
 
 import os
@@ -144,6 +145,7 @@ def load_frequency_words(
 
     # 默认区域（向后兼容）
     current_section = "WORD_GROUPS"
+    current_category = "其他"
 
     for group in word_groups:
         # 过滤空行和注释行（# 开头）
@@ -152,12 +154,26 @@ def load_frequency_words(
         if not lines:
             continue
 
+        # 检查是否为主题分类指令。分类指令是元数据，不改变匹配行为。
+        while lines and lines[0].startswith("[[") and lines[0].endswith("]]"):
+            current_category = lines[0][2:-2].strip() or "其他"
+            lines = lines[1:]
+
+        if not lines:
+            continue
+
         # 检查是否为区域标记
-        if lines[0].startswith("[") and lines[0].endswith("]"):
+        if (
+            lines[0].startswith("[")
+            and lines[0].endswith("]")
+            and not lines[0].startswith("[[")
+        ):
             section_name = lines[0][1:-1].upper()
             if section_name in ("GLOBAL_FILTER", "WORD_GROUPS"):
                 current_section = section_name
                 lines = lines[1:]  # 移除标记行
+                if current_section == "WORD_GROUPS":
+                    current_category = "其他"
 
         # 处理全局过滤区域
         if current_section == "GLOBAL_FILTER":
@@ -175,7 +191,12 @@ def load_frequency_words(
         group_alias = None  # 组别名（[别名] 语法）
 
         # 检查第一行是否为组别名（非区域标记）
-        if words and words[0].startswith("[") and words[0].endswith("]"):
+        if (
+            words
+            and words[0].startswith("[")
+            and words[0].endswith("]")
+            and not words[0].startswith("[[")
+        ):
             potential_alias = words[0][1:-1].strip()
             # 排除区域标记（GLOBAL_FILTER, WORD_GROUPS）
             if potential_alias.upper() not in ("GLOBAL_FILTER", "WORD_GROUPS"):
@@ -237,6 +258,7 @@ def load_frequency_words(
                     "group_key": group_key,
                     "display_name": display_name,  # 可能为 None
                     "max_count": group_max_count,
+                    "category": current_category,
                 }
             )
 

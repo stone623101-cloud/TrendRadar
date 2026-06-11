@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrendRadar</title>
+    <style>
+        :root {
+            --bg: #f4f1ea;
+            --paper: #fffdf8;
+            --ink: #24211d;
+            --muted: #77706a;
+            --line: #ded8ce;
+            --line-soft: #ebe5dc;
+            --accent: #b35a16;
+            --accent-soft: #fff0df;
+            --ok: #3d6b4f;
+            --warn: #9f2f19;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .page {
+            max-width: 760px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: var(--paper);
+            border-left: 1px solid var(--line);
+            border-right: 1px solid var(--line);
+        }
+
+        .masthead {
+            padding: 28px 22px 20px;
+            background: #211e1a;
+            color: #fff8ef;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 750;
+            letter-spacing: 0;
+        }
+
+        .mode {
+            color: #d7c9b9;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .summary-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+            color: #eadfd2;
+            font-size: 14px;
+        }
+
+        .ai-card {
+            margin: 16px 16px 0;
+            border: 1px solid var(--line);
+            background: #fff9f1;
+        }
+
+        .ai-card-toggle {
+            width: 100%;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border: 0;
+            border-bottom: 1px solid var(--line-soft);
+            padding: 11px 14px;
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .toggle-indicator {
+            color: var(--accent);
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .ai-summary {
+            max-height: 96px;
+            overflow: hidden;
+            padding: 12px 14px;
+            color: #423c35;
+        }
+
+        .ai-summary p,
+        .ai-card-body p {
+            margin: 0 0 8px;
+        }
+
+        .ai-card-body {
+            display: none;
+            padding: 0 14px 14px;
+        }
+
+        .ai-card.is-open .ai-card-body {
+            display: block;
+        }
+
+        .ai-card.is-open .ai-summary {
+            max-height: none;
+        }
+
+        .ai-detail-block {
+            border-top: 1px solid var(--line-soft);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .ai-detail-block h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+        }
+
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            margin-top: 16px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 253, 248, 0.96);
+            backdrop-filter: blur(10px);
+        }
+
+        .chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 16px 8px;
+            scrollbar-width: none;
+        }
+
+        .chips::-webkit-scrollbar { display: none; }
+
+        .chip,
+        .seg-btn,
+        .icon-btn,
+        .new-toggle {
+            min-height: 36px;
+            border: 1px solid var(--line);
+            background: #fffaf3;
+            color: var(--ink);
+            border-radius: 6px;
+            padding: 0 11px;
+            cursor: pointer;
+            font: inherit;
+            white-space: nowrap;
+        }
+
+        .chip.is-active,
+        .seg-btn.is-active,
+        .new-toggle.is-active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: #7d3504;
+            font-weight: 700;
+        }
+
+        .secondary-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 0 16px 10px;
+        }
+
+        .segmented {
+            display: flex;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .seg-btn {
+            border: 0;
+            border-radius: 0;
+            min-width: 58px;
+            background: transparent;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            min-width: 38px;
+            padding: 0 9px;
+            font-weight: 700;
+        }
+
+        .feed {
+            padding: 8px 0 20px;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            gap: 8px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line-soft);
+        }
+
+        .item:hover {
+            background: #fff8ef;
+        }
+
+        .index {
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+            padding-top: 2px;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 650;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .new-badge {
+            flex: 0 0 auto;
+            border: 1px solid #efb6a8;
+            background: #fff1ed;
+            color: var(--warn);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px 8px;
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .source {
+            color: #403a34;
+            font-weight: 600;
+        }
+
+        .rank {
+            color: var(--accent);
+        }
+
+        .empty {
+            display: none;
+            padding: 38px 18px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty.is-visible {
+            display: block;
+        }
+
+        .failed-sources {
+            margin: 18px 16px 0;
+            border-top: 1px solid var(--line);
+            padding-top: 14px;
+            color: var(--warn);
+        }
+
+        .failed-sources h2 {
+            margin: 0 0 8px;
+            font-size: 15px;
+        }
+
+        .failed-sources ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        footer {
+            padding: 22px 16px 28px;
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 560px) {
+            .page {
+                border: 0;
+            }
+
+            .masthead {
+                padding: 24px 16px 18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .brand {
+                display: block;
+            }
+
+            .mode {
+                display: block;
+                margin-top: 4px;
+            }
+
+            .secondary-controls {
+                align-items: stretch;
+            }
+
+            .new-toggle {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .item {
+                grid-template-columns: 30px 1fr;
+                padding: 13px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="masthead">
+            <div class="brand">
+                <h1>TrendRadar</h1>
+                <span class="mode">__MODE__ · __GENERATED_AT__</span>
+            </div>
+            <div class="summary-line" id="summaryLine"></div>
+        </header>
+
+        __AI_CARD__
+
+        <section class="controls" aria-label="信息流筛选">
+            <div class="chips" id="categoryChips"></div>
+            <div class="secondary-controls">
+                <div class="segmented" aria-label="排序">
+                    <button class="seg-btn is-active" type="button" data-sort="heat">热度</button>
+                    <button class="seg-btn" type="button" data-sort="time">时间</button>
+                </div>
+                <div class="actions">
+                    <button class="new-toggle" type="button" id="newToggle">仅看新增</button>
+                    <button class="icon-btn" type="button" id="copyMarkdown" title="复制为 Markdown">MD</button>
+                </div>
+            </div>
+        </section>
+
+        <main class="feed" id="feed"></main>
+        <div class="empty" id="emptyState">
+            <p id="emptyText">本次没有匹配到可展示内容</p>
+            <button class="chip" type="button" id="clearFilters">清除筛选</button>
+        </div>
+
+        __FAILED_SOURCES__
+
+        <footer>Generated by TrendRadar</footer>
+    </div>
+
+    <noscript>
+        <div class="empty is-visible">当前报告需要启用 JavaScript 才能筛选和排序。</div>
+    </noscript>
+
+    <script id="page-data" type="application/json">__PAYLOAD_JSON__</script>
+    <script>
+        const payload = JSON.parse(document.getElementById('page-data').textContent);
+        const report = payload.report || {};
+        const allItems = Array.isArray(report.items) ? report.items : [];
+        const state = { category: '全部', sort: 'heat', newOnly: false };
+        const categoryOrder = ['科技AI', '国际局势', '企业品牌', '时尚教育', '电竞游戏', '其他'];
+
+        const feed = document.getElementById('feed');
+        const chips = document.getElementById('categoryChips');
+        const summaryLine = document.getElementById('summaryLine');
+        const emptyState = document.getElementById('emptyState');
+        const emptyText = document.getElementById('emptyText');
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[char]));
+        }
+
+        function currentUrl(item) {
+            if (window.innerWidth <= 700 && item.mobile_url) return item.mobile_url;
+            return item.url || item.mobile_url || '';
+        }
+
+        function sourceText(source) {
+            const rank = source.rank > 0 ? ` <span class="rank">#${source.rank}</span>` : '';
+            return `<span class="source">${escapeHtml(source.name)}${rank}</span>`;
+        }
+
+        function renderSummary() {
+            summaryLine.innerHTML = [
+                `共 ${report.total_count || 0} 条`,
+                `${report.new_count || 0} 新增`,
+                `${Object.keys(report.category_counts || {}).length} 个主题`
+            ].map(escapeHtml).join('<span>·</span>');
+        }
+
+        function renderChips() {
+            const counts = report.category_counts || {};
+            const categories = Object.keys(counts).sort((a, b) => {
+                const ai = categoryOrder.indexOf(a);
+                const bi = categoryOrder.indexOf(b);
+                return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.localeCompare(b);
+            });
+            const chipData = [['全部', report.total_count || allItems.length], ...categories.map(name => [name, counts[name]])];
+            chips.innerHTML = chipData
+                .filter(([, count]) => count > 0)
+                .map(([name, count]) => `<button class="chip${state.category === name ? ' is-active' : ''}" type="button" data-category="${escapeHtml(name)}">${escapeHtml(name)} · ${count}</button>`)
+                .join('');
+        }
+
+        function filteredItems() {
+            let items = allItems.filter(item => {
+                const categoryOk = state.category === '全部' || item.category === state.category;
+                const newOk = !state.newOnly || item.is_new;
+                return categoryOk && newOk;
+            });
+            items = [...items].sort((a, b) => {
+                if (state.sort === 'time') {
+                    return (b.time_score - a.time_score) || (b.heat - a.heat) || a.title.localeCompare(b.title);
+                }
+                return (b.heat - a.heat) || (b.time_score - a.time_score) || a.title.localeCompare(b.title);
+            });
+            return items;
+        }
+
+        function renderFeed() {
+            const items = filteredItems();
+            feed.innerHTML = items.map((item, index) => {
+                const url = currentUrl(item);
+                const visibleSources = (item.sources || []).slice(0, 3);
+                const hiddenCount = Math.max(0, (item.sources || []).length - visibleSources.length);
+                const metaParts = [
+                    ...visibleSources.map(sourceText),
+                    hiddenCount ? `<span>+${hiddenCount} 平台</span>` : '',
+                    item.keyword_group ? `<span>${escapeHtml(item.keyword_group)}</span>` : `<span>${escapeHtml(item.category || '其他')}</span>`,
+                    item.time_display ? `<span>${escapeHtml(item.time_display)}</span>` : ''
+                ].filter(Boolean);
+                const title = `<span class="title">${escapeHtml(item.title)}</span>`;
+                const titleLink = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${title}</a>` : title;
+                return `
+                    <article class="item">
+                        <div class="index">${index + 1}</div>
+                        <div>
+                            <div class="title-row">
+                                ${item.is_new ? '<span class="new-badge">NEW</span>' : ''}
+                                ${titleLink}
+                            </div>
+                            <div class="meta">${metaParts.join('<span>·</span>')}</div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+            const noItems = items.length === 0;
+            emptyState.classList.toggle('is-visible', noItems);
+            emptyText.textContent = allItems.length === 0 ? '本次没有匹配到可展示内容' : '当前筛选无结果';
+        }
+
+        function refresh() {
+            renderSummary();
+            renderChips();
+            renderFeed();
+            document.getElementById('newToggle').classList.toggle('is-active', state.newOnly);
+            document.querySelectorAll('.seg-btn').forEach(btn => {
+                btn.classList.toggle('is-active', btn.dataset.sort === state.sort);
+            });
+        }
+
+        function markdownForCurrentView() {
+            const byCategory = new Map();
+            for (const item of filteredItems()) {
+                const category = item.category || '其他';
+                if (!byCategory.has(category)) byCategory.set(category, []);
+                byCategory.get(category).push(item);
+            }
+            const lines = [`# TrendRadar ${payload.generated_at || ''}`.trim(), ''];
+            for (const [category, items] of byCategory.entries()) {
+                lines.push(`## ${category}`);
+                items.forEach((item, index) => {
+                    const url = currentUrl(item);
+                    lines.push(`${index + 1}. ${item.title}${url ? ` (${url})` : ''}`);
+                    const sourceLine = (item.sources || []).map(source => source.rank > 0 ? `${source.name} #${source.rank}` : source.name).join(' · ');
+                    if (sourceLine) lines.push(`   来源：${sourceLine}`);
+                });
+                lines.push('');
+            }
+            return lines.join('\n');
+        }
+
+        chips.addEventListener('click', event => {
+            const button = event.target.closest('[data-category]');
+            if (!button) return;
+            state.category = button.dataset.category;
+            refresh();
+        });
+
+        document.querySelector('.segmented').addEventListener('click', event => {
+            const button = event.target.closest('[data-sort]');
+            if (!button) return;
+            state.sort = button.dataset.sort;
+            refresh();
+        });
+
+        document.getElementById('newToggle').addEventListener('click', () => {
+            state.newOnly = !state.newOnly;
+            refresh();
+        });
+
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            state.category = '全部';
+            state.newOnly = false;
+            refresh();
+        });
+
+        document.getElementById('copyMarkdown').addEventListener('click', async () => {
+            const text = markdownForCurrentView();
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch (error) {
+                const area = document.createElement('textarea');
+                area.value = text;
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                area.remove();
+            }
+        });
+
+        document.querySelectorAll('.ai-card-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                const card = button.closest('.ai-card');
+                const open = card.classList.toggle('is-open');
+                button.setAttribute('aria-expanded', String(open));
+                const indicator = button.querySelector('.toggle-indicator');
+                if (indicator) indicator.textContent = open ? '收起' : (card.classList.contains('is-status') ? '展开' : '展开全文');
+            });
+        });
+
+        refresh();
+    </script>
+</body>
+</html>

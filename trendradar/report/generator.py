@@ -124,6 +124,7 @@ def prepare_report_data(
                 "word": stat["word"],
                 "count": stat["count"],
                 "percentage": stat.get("percentage", 0),
+                "category": stat.get("category", "其他"),
                 "titles": processed_titles,
             }
         )

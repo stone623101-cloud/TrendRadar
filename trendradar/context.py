@@ -1073,6 +1073,7 @@ class AppContext:
                     "word": tag_name,
                     "count": len(hotlist_titles),
                     "position": tag_data.get("position", 9999),
+                    "category": "其他",
                     "titles": hotlist_titles,
                 })
 
@@ -1083,6 +1084,7 @@ class AppContext:
                     "word": tag_name,
                     "count": len(rss_titles),
                     "position": tag_data.get("position", 9999),
+                    "category": "其他",
                     "titles": rss_titles,
                 })
 

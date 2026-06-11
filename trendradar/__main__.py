@@ -666,8 +666,26 @@ class NewsAnalyzer:
         display_config = self.ctx.config.get("DISPLAY", {})
         standalone_config = display_config.get("STANDALONE", {})
 
-        platform_ids = standalone_config.get("PLATFORMS", [])
-        rss_feed_ids = standalone_config.get("RSS_FEEDS", [])
+        platform_sources = standalone_config.get("PLATFORMS", [])
+        rss_feed_sources = standalone_config.get("RSS_FEEDS", [])
+        platform_ids = [
+            item.get("id", item) if isinstance(item, dict) else item
+            for item in platform_sources
+        ]
+        rss_feed_ids = [
+            item.get("id", item) if isinstance(item, dict) else item
+            for item in rss_feed_sources
+        ]
+        platform_category_map = {
+            item.get("id", ""): item.get("category", "其他")
+            for item in platform_sources
+            if isinstance(item, dict)
+        }
+        rss_category_map = {
+            item.get("id", ""): item.get("category", "其他")
+            for item in rss_feed_sources
+            if isinstance(item, dict)
+        }
         max_items = standalone_config.get("MAX_ITEMS", 20)
 
         if not platform_ids and not rss_feed_ids:
@@ -746,6 +764,7 @@ class NewsAnalyzer:
                 standalone_data["platforms"].append({
                     "id": platform_id,
                     "name": platform_name,
+                    "category": platform_category_map.get(platform_id, "其他"),
                     "items": items,
                 })
 
@@ -779,6 +798,7 @@ class NewsAnalyzer:
                         standalone_data["rss_feeds"].append({
                             "id": feed_id,
                             "name": feed_data["name"],
+                            "category": rss_category_map.get(feed_id, "其他"),
                             "items": items,
                         })
 
